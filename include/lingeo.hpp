@@ -2,15 +2,17 @@
 #define LINGEO_HPP
 
 #include <iostream>
-#include <math>
+#include <cmath>
 
 namespace lingeo {
 
-    class point_t final {
+    class Point_t {
 
         double x_= NaN, y_ = NaN, z_ = NaN;
 
         public:
+
+            Point_t(double x, double y, double z) : x_{x}, y_{y}, z_{z} {};
 
             void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
             
@@ -26,7 +28,23 @@ namespace lingeo {
             double z() { return z_; }
     };
 
-    double det_abcd(point_t a, point_t b, point_t c, point_t d)
+    class Triangle_t {
+
+        Point_t p_, q_, r_;
+
+        public:
+
+            Triangle_t( double p_x, double p_y, double p_z, 
+                        double q_x, double q_y, double q_z,
+                        double r_x, double r_y, double r_z ) : p_{p_x, p_y, p_z}, q_{q_x, q_y, q_z}, r_{r_x, r_y, r_z} {};
+        
+            Point_t get_p() { return p_; }
+            Point_t get_q() { return q_; }
+            Point_t get_r() { return r_; }
+
+    };
+
+    double det_abcd(Point_t a, Point_t b, Point_t c, Point_t d)
     {
         if (a.valid() && b.valid() && c.valid())
         {
@@ -39,6 +57,58 @@ namespace lingeo {
         {
             return NaN;
         }
+    }
+
+    double det_abc(Point_t a, Point_t b, Point_t c)
+    {
+        if (a.valid() && b.valid() && c.valid())
+        {
+            return a.x()*(b.y() - c.y()) - a.y()*(b.x() - c.x()) + b.x()*c.y() - c.x()*b.y();
+        }
+        else
+        {
+            return NaN;
+        }
+    }
+
+    enum Positions {
+        DOESNT_INTERSECT = 0,
+        INTERSECT = 1,
+        COMPLANAR = 2
+    };
+
+    enum Positions position_of_trinagle_and_plane(Triangle_t T1, Triangle_t T2) 
+    {
+        double p2_q2_r2_p1 = det_abcd(T2.get_p(), T2.get_q(), T2.get_r(), T1.get_p());
+        double p2_q2_r2_q1 = det_abcd(T2.get_p(), T2.get_q(), T2.get_r(), T1.get_q());
+        double p2_q2_r2_r1 = det_abcd(T2.get_p(), T2.get_q(), T2.get_r(), T1.get_r());
+
+        if (!isnan(p2_q2_r2_p1) && !isnan(p2_q2_r2_q1) != NaN && !isnan(p2_q2_r2_r1) != NaN)
+        {
+            if ((p2_q2_r2_p1 > 0 && p2_q2_r2_q1 > 0 && p2_q2_r2_r1 > 0) ||
+                (p2_q2_r2_p1 < 0 && p2_q2_r2_q1 < 0 && p2_q2_r2_r1 < 0))
+            {
+                return DOESNT_INTERSECT;
+            }
+            else if (p2_q2_r2_p1 == 0 && p2_q2_r2_q1 == 0 && p2_q2_r2_r1 == 0)
+            {
+                return COMPLANAR;
+            }
+            else 
+            {
+                return INTERSECT;
+            }
+        }
+        else 
+        {
+            return DOESNT_INTERSECT;
+        }
+    }
+
+
+    bool intersection_3D_triangles()
+    {
+        
     }
 
 
