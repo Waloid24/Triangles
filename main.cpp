@@ -2,15 +2,22 @@
 #include <vector>
 #include "include/lingeo.hpp"
 
+
 const int NUMBER_OF_COORDINATES = 3;
 const int NUMBER_OF_DOTS = 3;
+
+/*
+
+окто-дерево для пространства, сделать это перед end-to-end
+
+*/
 
 int main (int argc, char *argv[])
 {
     if (argc != 2)
     {
-        std::cout << "You should enter one arguments: the number of triangles" << std::endl;
-        std::abort();
+        std::cerr << "You should enter one arguments: the number of triangles" << std::endl;
+        return 1;
     }
 
 

@@ -3,28 +3,27 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
+
+//TODO: add segment and degenerate cases - they are correct cases
+//TODO: one defenition row (на cppreference), 3-d Vladimirov lection. Функции, которые в хэдере должны быть inline! Например, подключение в разные cpp'ки один hpp, на этапе линковки свалится. Если же
+// inline, то можно несколько одинаковых с точки зрения лексического разбора функций написать. Там определение будет одно для нескольких единиц трансляции
 
 namespace lingeo {
 
-    enum PLANES {
-        YZ = 0,
-        XZ = 1,
-        XY = 2
-    };
-
     enum AXES {
-        X = 0,
-        Y = 1,
-        Z = 2
-    };
+        X,
+        Y,
+        Z
+    }; 
 
     enum Positions {
-        DOESNT_INTERSECT = 0,
-        INTERSECT = 1,
-        COMPLANAR = 2
+        DOESNT_INTERSECT,
+        INTERSECT,
+        COPLANAR
     };
 
-    class Point_t {
+    class Point_t final {
 
         double x_= NAN, y_ = NAN, z_ = NAN;
 
@@ -35,30 +34,26 @@ namespace lingeo {
             void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
             
             int valid() const { 
-                if (std::isnan(x_) || std::isnan(y_) || std::isnan(z_)) 
-                    return 0;
-                else
-                    return 1;
+                return !(std::isnan(x_) || std::isnan(y_) || std::isnan(z_));
             }
 
-            void project_onto_plane(int plane = XY)
+            void project_onto_XY()
             {
-                if (plane == XY)
-                {
-                    return;
-                }
-                else if (plane == XZ)
-                {
-                    y_ = z_;
-                    z_ = 1;
-                }
-                else
-                {
-                    x_ = y_;
-                    y_ = z_;
-                    z_ = 1;
-                }
-                return;
+                std::exchange(z_, 0);
+            }
+
+            void project_onto_XZ()
+            {
+                std::exchange(y_, x_);
+                std::exchange(x_, z_);
+                std::exchange(z_, 0);
+            }
+            
+            void project_onto_YZ()
+            {
+                std::exchange(x_, y_);
+                std::exchange(y_, z_);
+                std::exchange(z_, 0);
             }
 
             double x() { return x_; }
@@ -70,10 +65,9 @@ namespace lingeo {
     {
         if (a.valid() && b.valid() && c.valid())
         {
-            return  a.x()*(b.y()*(c.z() - d.z()) - b.z()*(c.y() - d.y()) + c.y()*d.z() - d.y()*c.z()) - 
-                    a.y()*(b.x()*(c.z() - d.z()) - b.z()*(c.x() - d.x()) + c.x()*d.z() - d.x()*c.z()) +
-                    a.z()*(b.x()*(c.y() - d.y()) - b.y()*(c.x() - d.x()) + c.x()*d.y() - d.x()*c.y()) -
-                    1    *(b.x()*(c.y()*d.z() - d.y()*c.z()) - b.y()*(c.x()*d.z() - d.x()*c.z()) + b.z()*(c.x()*d.y() - d.x()*c.y()));
+            return  (a.x()-d.x())*( (b.y()-d.y())*(c.z()-d.z()) - (c.y()-d.y())*(b.z()-d.z()) ) -
+                    (a.y()-d.y())*( (b.x()-d.x())*(c.z()-d.z()) - (c.x()-d.x())*(b.z()-d.z()) ) +
+                    (a.z()-d.z())*( (b.x()-d.x())*(c.y()-d.y()) - (b.y()-d.y())*(c.x()-d.x()) );
         }
         else
         {
@@ -81,13 +75,13 @@ namespace lingeo {
         }
     }
 
-    double det_abc(Point_t a, Point_t b, Point_t c, int axis = Z)
+    double det_abc(Point_t a, Point_t b, Point_t c, int axis = Z) // get enum
     {
         if (a.valid() && b.valid() && c.valid())
         {
-            if (axis = Z)
+            if (axis == Z)
                 return a.x()*(b.y() - c.y()) - a.y()*(b.x() - c.x()) + b.x()*c.y() - c.x()*b.y();
-            else if (axis = Y)
+            else if (axis == Y)
                 return a.x()*(c.z() - b.z()) - (b.x()*c.z() - c.x()*b.z()) + a.z()*(b.x() - c.x());
             else 
                 return b.y()*c.z() - c.y()*b.z() - a.y()*(c.z() - b.z()) + a.z()*(c.y() - b.y());
@@ -98,14 +92,14 @@ namespace lingeo {
         }
     }
 
-    class Triangle_t {
+    class Triangle_t final {
 
         Point_t p_, q_, r_;
 
         public:
 
-            Triangle_t(std::vector<double> coords) : p_{coords[0], coords[1], coords[2]}, q_{coords[3], coords[4], coords[5]}, 
-                                                    r_{coords[6], coords[7], coords[8]} {}
+            Triangle_t(const std::vector<double> &coords) : p_{coords[0], coords[1], coords[2]}, q_{coords[3], coords[4], coords[5]}, 
+                                                    r_{coords[6], coords[7], coords[8]} {} // receive three Point_t
 
             void print() const { 
                 std::cout << "p";
@@ -121,43 +115,43 @@ namespace lingeo {
                 std::cout << std::endl;
             }
 
+
+
             void project_onto_plane()
             {
-                if (det_abc(p_, q_, r_, Z) == 0)
+                if (det_abc(p_, q_, r_, Z) == 0) //TODO: change to double and think about how can I correctly compare doubles
                 {
                     std::cout << "Projecting onto the Oxy = 0" << std::endl;
                     if (det_abc(p_, q_, r_, Y) == 0)
                     {
                         std::cout << "Projecting onto the Oxz = 0. Project onto the Oyz" << std::endl;
 
-                        p_.project_onto_plane(YZ);
-                        q_.project_onto_plane(YZ);
-                        r_.project_onto_plane(YZ);
+                        p_.project_onto_YZ();
+                        q_.project_onto_YZ();
+                        r_.project_onto_YZ();
                     }
                     else //if (det_abc(T.p(), T.q(), T.r(), X) == 0)
                     {
                         std::cout << "Projecting onto the Oxz" << std::endl;
                         
-                        p_.project_onto_plane(XZ);
-                        q_.project_onto_plane(XZ);
-                        r_.project_onto_plane(XZ);
+                        p_.project_onto_XZ();
+                        q_.project_onto_XZ();
+                        r_.project_onto_XZ();
                     }
                 }
                 else
                 {
                     std::cout << "Project onto Oxy" << std::endl;
                     
-                    p_.project_onto_plane(XY);
-                    q_.project_onto_plane(XY);
-                    r_.project_onto_plane(XY);
+                    p_.project_onto_XY();
+                    q_.project_onto_XY();
+                    r_.project_onto_XY();
                 }
             }
 
-            void swap_two_points()
+            void swap_q_r()
             {
-                Point_t temp_q = q_;
-                q_ = r_;
-                r_ = temp_q;
+                std::swap(q_, r_);
             }
 
             void arrange_counterclockwise()
@@ -166,9 +160,7 @@ namespace lingeo {
 
                 if (det_abc(p_, q_, r_) < 0)
                 {
-                    swap_two_points();
-                    std::cout << "det_abc adter swap_two_points() = " << det_abc(p_, q_, r_) << std::endl;
-
+                    swap_q_r();
                 }
             }
             
@@ -181,16 +173,16 @@ namespace lingeo {
                 p_ = temp_r;
             }
 
-            Point_t p() { return p_; }
-            Point_t q() { return q_; }
-            Point_t r() { return r_; }
+            Point_t p() const { return p_; }
+            Point_t q() const { return q_; } // output using reference!
+            Point_t r() const { return r_; }
 
-    };    
+    };
 
-    enum Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) 
+    enum Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) //TODO: think about receive using const ref in everyone method except manager funtion
     {
         double p2_q2_r2_p1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.p());
-        double p2_q2_r2_q1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
+        double p2_q2_r2_q1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.q()); // receive using reference!
         double p2_q2_r2_r1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
 
         if (!std::isnan(p2_q2_r2_p1) && !std::isnan(p2_q2_r2_q1) != NAN && !std::isnan(p2_q2_r2_r1) != NAN)
@@ -203,8 +195,8 @@ namespace lingeo {
             }
             else if (p2_q2_r2_p1 == 0 && p2_q2_r2_q1 == 0 && p2_q2_r2_r1 == 0)
             {
-                std::cout << "triangle and plane: COMPLANAR" << std::endl;
-                return COMPLANAR;
+                std::cout << "triangle and plane: COPLANAR" << std::endl;
+                return COPLANAR;
             }
             else 
             {
@@ -251,12 +243,12 @@ namespace lingeo {
             {
                 if (sgn<int>(det_p) < 0)
                 {
-                    T2.swap_two_points();
+                    T2.swap_q_r();
                     break;
                 }
                 else if (sgn<int>(det_p) == 0 && sgn<int>(det_q) > 0)
                 {
-                    T2.swap_two_points();
+                    T2.swap_q_r();
                 }
                 break;
             }
@@ -267,10 +259,6 @@ namespace lingeo {
             det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: I need only sign of this expression. Merge 'sgn()' and 'det()'
             det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
             det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
-
-            // std::cout << "det_p = " << det_p << std::endl;
-            // std::cout << "det_q = " << det_q << std::endl;
-            // std::cout << "det_r = " << det_r << std::endl;
         }
 
         det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: only for checking below. Must be removed later
@@ -321,21 +309,6 @@ namespace lingeo {
         {
             std::cout << "Some error when ordering T1 relative to T2" << std::endl;
         }
-
-
-        // int res2 = arrange_3D_triangle_points(T2, T1);
-        // if (res2 == 1)
-        // {
-        //     std::cout << "T2 is sorted relative to T1" << std::endl;
-        // }
-        // else if (res2 == 0)
-        // {
-        //     std::cout << "It was not possible to arrange T2 relative to T1" << std::endl;
-        // }
-        // else
-        // {
-        //     std::cout << "Some error when ordering T2 relative to T1" << std::endl;
-        // } 
 
         if (det_abcd(T1.p(), T1.q(), T2.p(), T2.q()) <= 0 && det_abcd(T1.p(), T1.r(), T2.r(), T2.p()) <= 0)
         {
@@ -568,7 +541,7 @@ namespace lingeo {
         {
             return check_3D_triangles_intersection(T1, T2);
         }
-        else if (result1 == COMPLANAR && result2 == COMPLANAR)
+        else if (result1 == COPLANAR && result2 == COPLANAR)
         {
             return check_2D_triangles_intersection(T1, T2);
         }
