@@ -52,12 +52,9 @@ int main (int argc, char *argv[])
     lingeo::Triangle_t T1{dots_array_1};
     lingeo::Triangle_t T2{dots_array_2};
 
-    T1.print();
-    T2.print();
+    bool result = intersection_3D_triangles(T1, T2);
 
-    int result = intersection_3D_triangles(T1, T2);
-
-    if (result == lingeo::INTERSECT)
+    if (result)
     {
         std::cout << "\033[32;1m INTERSECT \033[0m" << std::endl;
     }

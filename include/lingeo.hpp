@@ -11,17 +11,17 @@
 
 namespace lingeo {
 
-    enum AXES {
+    typedef enum Axes {
         X,
         Y,
         Z
-    }; 
+    } Axes;
 
-    enum Positions {
+    typedef enum Positions {
         DOESNT_INTERSECT,
         INTERSECT,
         COPLANAR
-    };
+    } Positions;
 
     class Point_t final {
 
@@ -56,12 +56,12 @@ namespace lingeo {
                 std::exchange(z_, 0);
             }
 
-            double x() { return x_; }
-            double y() { return y_; }
-            double z() { return z_; }
+            double x() const { return x_; }
+            double y() const { return y_; }
+            double z() const { return z_; }
     };
 
-    double det_abcd(Point_t a, Point_t b, Point_t c, Point_t d)
+    double det_abcd(const Point_t &a, const Point_t &b, const Point_t &c, const Point_t &d)
     {
         if (a.valid() && b.valid() && c.valid())
         {
@@ -75,7 +75,7 @@ namespace lingeo {
         }
     }
 
-    double det_abc(Point_t a, Point_t b, Point_t c, int axis = Z) // get enum
+    double det_abc(const Point_t &a, const Point_t &b, const Point_t &c, Axes axis = Z) // get enum
     {
         if (a.valid() && b.valid() && c.valid())
         {
@@ -121,28 +121,21 @@ namespace lingeo {
             {
                 if (det_abc(p_, q_, r_, Z) == 0) //TODO: change to double and think about how can I correctly compare doubles
                 {
-                    std::cout << "Projecting onto the Oxy = 0" << std::endl;
                     if (det_abc(p_, q_, r_, Y) == 0)
                     {
-                        std::cout << "Projecting onto the Oxz = 0. Project onto the Oyz" << std::endl;
-
                         p_.project_onto_YZ();
                         q_.project_onto_YZ();
                         r_.project_onto_YZ();
                     }
                     else //if (det_abc(T.p(), T.q(), T.r(), X) == 0)
-                    {
-                        std::cout << "Projecting onto the Oxz" << std::endl;
-                        
+                    {                        
                         p_.project_onto_XZ();
                         q_.project_onto_XZ();
                         r_.project_onto_XZ();
                     }
                 }
                 else
-                {
-                    std::cout << "Project onto Oxy" << std::endl;
-                    
+                {                    
                     p_.project_onto_XY();
                     q_.project_onto_XY();
                     r_.project_onto_XY();
@@ -156,8 +149,6 @@ namespace lingeo {
 
             void arrange_counterclockwise()
             {
-                std::cout << "det_abc(p,q,r) = " << det_abc(p_, q_, r_) << std::endl;
-
                 if (det_abc(p_, q_, r_) < 0)
                 {
                     swap_q_r();
@@ -179,7 +170,7 @@ namespace lingeo {
 
     };
 
-    enum Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) //TODO: think about receive using const ref in everyone method except manager funtion
+    Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) //TODO: think about receive using const ref in everyone method except manager funtion
     {
         double p2_q2_r2_p1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.p());
         double p2_q2_r2_q1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.q()); // receive using reference!
@@ -190,23 +181,19 @@ namespace lingeo {
             if ((p2_q2_r2_p1 > 0 && p2_q2_r2_q1 > 0 && p2_q2_r2_r1 > 0) ||
                 (p2_q2_r2_p1 < 0 && p2_q2_r2_q1 < 0 && p2_q2_r2_r1 < 0))
             {
-                std::cout << "triangle and plane: DOESNT_INTERSECT" << std::endl;
                 return DOESNT_INTERSECT;
             }
             else if (p2_q2_r2_p1 == 0 && p2_q2_r2_q1 == 0 && p2_q2_r2_r1 == 0)
             {
-                std::cout << "triangle and plane: COPLANAR" << std::endl;
                 return COPLANAR;
             }
             else 
             {
-                std::cout << "triangle and plane: INTERSECT" << std::endl;
                 return INTERSECT;
             }
         }
         else 
         {
-            std::cout << "is_nan: DOESNT_INTERSECT" << std::endl;
             return DOESNT_INTERSECT;
         }
     }
@@ -216,29 +203,18 @@ namespace lingeo {
         return (T(0) < val) - (val < T(0));
     }
 
-    int arrange_3D_triangle_points(Triangle_t T1, Triangle_t T2)
+    bool arrange_3D_triangle_points(Triangle_t T1, Triangle_t T2)
     {
-        std::cout << "Before arranging" << std::endl;
-        T1.print();
-        T2.print();
-
         int det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: I need only sign of this expression. Merge 'sgn()' and 'det()'
         int det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
         int det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
 
-        std::cout << "before arranging" << std::endl;
-
-        std::cout << "det_p = " << det_p << std::endl;
-        std::cout << "det_q = " << det_q << std::endl;
-        std::cout << "det_r = " << det_r << std::endl;
-
         if (det_p == 0 && det_q == 0 && det_r == 0)
         {
-            return -1;
+            return false;
         }
         for (int i = 0; i < 3; ++i)
         {
-            std::cout << "i = " << i << std::endl;
             if ( (sgn<int>(det_q) == sgn<int>(det_r)) && (sgn<int>(det_p) != sgn<int>(det_q)) ) // by construction, the last check can be removed
             {
                 if (sgn<int>(det_p) < 0)
@@ -260,87 +236,48 @@ namespace lingeo {
             det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
             det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
         }
-
-        det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: only for checking below. Must be removed later
-        det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
-        det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
-
-        
-
-        if ( ((sgn<int>(det_q) == sgn<int>(det_r) && sgn<int>(det_r) <= 0 && sgn<int>(det_p) >  0)) || 
-             ((sgn<int>(det_q) < 0 && sgn<int>(det_r) < 0 && sgn<int>(det_p) == 0)) )
-        {
-            std::cout << "\033[36;1m Successful arranging\033[0m" << std::endl;
-
-            T1.print();
-            T2.print();
-
-            return 1;
-        }
-        else
-        {
-            std::cout << "\033[31;1m Unsuccessful arranging\033[0m" << std::endl;
-
-            T1.print();
-            T2.print();
-            
-            return 0;
-        }
-
-        T1.print();
-        T2.print();
-
-        return -1;
+        return true;
     }
 
-    int check_3D_triangles_intersection(Triangle_t T1, Triangle_t T2)
+    bool check_3D_triangles_intersection(Triangle_t T1, Triangle_t T2)
     {
-
-        int res1 = arrange_3D_triangle_points(T1, T2);
-        if (res1 == 1)
+        bool is_arranged = arrange_3D_triangle_points(T1, T2);
+        if (!is_arranged)
         {
-            std::cout << "T1 is sorted relative to T2" << std::endl;
-        }
-        else if (res1 == 0)
-        {
-            std::cout << "It was not possible to arrange T1 relative to T2" << std::endl;
-        }
-        else
-        {
-            std::cout << "Some error when ordering T1 relative to T2" << std::endl;
+            return false;
         }
 
         if (det_abcd(T1.p(), T1.q(), T2.p(), T2.q()) <= 0 && det_abcd(T1.p(), T1.r(), T2.r(), T2.p()) <= 0)
         {
-            return INTERSECT;
+            return true;
         }
 
-        return DOESNT_INTERSECT; //MUST BE CHANGED
+        return false; 
     }
 
-    int p1_belongs_R1(Triangle_t T1, Triangle_t T2)
+    bool p1_belongs_R1(Triangle_t T1, Triangle_t T2)
     {
         if (det_abc(T2.r(), T2.p(), T1.q()) >= 0)
         {
             if (det_abc(T2.r(), T1.p(), T1.q()) >= 0)
             {
                 if (det_abc(T1.p(), T2.p(), T1.q()) >= 0)
-                    return DOESNT_INTERSECT;
+                    return false;
                 else
                 {
                     if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
                     {
                         if (det_abc(T1.q(), T1.r(), T2.p()) >= 0)
-                            return INTERSECT;
+                            return true;
                         else
-                            return DOESNT_INTERSECT;
+                            return false;
                     }
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
             }
             else
-                return DOESNT_INTERSECT;
+                return false;
         }
         else
         {
@@ -349,19 +286,19 @@ namespace lingeo {
                 if (det_abc(T1.q(), T1.r(), T2.r()) >= 0)
                 {
                     if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
-                        return INTERSECT;
+                        return true;
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
                 else
-                    return DOESNT_INTERSECT;
+                    return false;
             }
             else
-                return DOESNT_INTERSECT;
+                return false;
         }
     }
 
-    int p1_belongs_R2(Triangle_t T1, Triangle_t T2)
+    bool p1_belongs_R2(Triangle_t T1, Triangle_t T2)
     {
         if (det_abc(T2.r(), T2.p(), T1.q()) >= 0)
         {
@@ -370,21 +307,21 @@ namespace lingeo {
                 if (det_abc(T1.p(), T2.p(), T1.q()) >= 0)
                 {
                     if (det_abc(T1.p(), T2.q(), T1.q()) > 0)
-                        return DOESNT_INTERSECT;
+                        return false;
                     else
-                        return INTERSECT;
+                        return true;
                 }
                 else 
                 {
                     if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
                     {
                         if (det_abc(T2.r(), T2.p(), T1.r()) >= 0)
-                            return INTERSECT;
+                            return true;
                         else
-                            return DOESNT_INTERSECT;
+                            return false;
                     }
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
             }
             else
@@ -394,15 +331,15 @@ namespace lingeo {
                     if (det_abc(T2.q(), T2.r(), T1.r()) >= 0)
                     {
                         if (det_abc(T1.q(), T1.r(), T2.q()) >= 0)
-                            return INTERSECT;
+                            return true;
                         else
-                            return DOESNT_INTERSECT;
+                            return false;
                     }
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
                 else
-                    return DOESNT_INTERSECT;
+                    return false;
             }
         }
         else
@@ -412,96 +349,80 @@ namespace lingeo {
                 if (det_abc(T1.q(), T1.r(), T2.r()) >= 0)
                 {
                     if (det_abc(T1.r(), T1.p(), T2.p()) >= 0)
-                        return INTERSECT;
+                        return true;
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
                 else
                 {
                     if (det_abc(T1.q(), T1.r(), T2.q()) >= 0)
                     {
                         if (det_abc(T2.q(), T2.r(), T1.r()) >= 0)
-                            return INTERSECT;
+                            return true;
                         else
-                            return DOESNT_INTERSECT;
+                            return false;
                     }
                     else
-                        return DOESNT_INTERSECT;
+                        return false;
                 }
             }
             else
-                return DOESNT_INTERSECT;
+                return false;
         }
     }
 
-    int check_2D_triangles_intersection(Triangle_t T1, Triangle_t T2)
+    bool check_2D_triangles_intersection(Triangle_t T1, Triangle_t T2)
     {
-        std::cout << "Before projecting" << std::endl;
-        T1.print();
-        T2.print();
-
         T1.project_onto_plane();
         T2.project_onto_plane();
 
-        std::cout << "After projecting" << std::endl;
-        T1.print();
-        T2.print();
-
         T1.arrange_counterclockwise();
         T2.arrange_counterclockwise();
-
-        std::cout << "After arranging" << std::endl;
-        T1.print();
-        T2.print();
 
         double det_p2_q2_p1 = det_abc(T2.p(), T2.q(), T1.p());
         double det_q2_r2_p1 = det_abc(T2.q(), T2.r(), T1.p());
         double det_r2_p2_p1 = det_abc(T2.r(), T2.p(), T1.p());
 
-        std::cout << "det_p2_q2_p1 = " << det_p2_q2_p1 << std::endl;
-        std::cout << "det_q2_r2_p1 = " << det_q2_r2_p1 << std::endl;
-        std::cout << "det_r2_p2_p1 = " << det_r2_p2_p1 << "\n" << std::endl;
-
         if (det_q2_r2_p1 == 0 && det_r2_p2_p1 == 0 && det_p2_q2_p1 == 0)
         {
-            return DOESNT_INTERSECT;
+            return false;
         }
         else if (det_q2_r2_p1 > 0 && det_r2_p2_p1 > 0 && det_p2_q2_p1 > 0)
         {
-            return INTERSECT;
+            return true;
         }
         else if (det_q2_r2_p1 == 0)
         {
             if (det_r2_p2_p1 > 0 && det_p2_q2_p1 > 0)
-                return INTERSECT;
+                return true;
             else if (det_r2_p2_p1 == 0)
-                return INTERSECT;
+                return true;
             else if (det_p2_q2_p1 == 0)
-                return INTERSECT;
+                return true;
             else
-                return DOESNT_INTERSECT;
+                return false;
         }
         else if (det_r2_p2_p1 == 0)
         {
             if (det_q2_r2_p1 > 0 && det_p2_q2_p1 > 0)
-                return INTERSECT;
+                return true;
             else if (det_q2_r2_p1 == 0)
-                return INTERSECT;
+                return true;
             else if (det_p2_q2_p1 == 0)
-                return INTERSECT;
+                return true;
             else
-                return DOESNT_INTERSECT;
+                return false;
         }
         else if (det_p2_q2_p1 == 0)
         {
             if (det_q2_r2_p1 > 0 && det_r2_p2_p1 > 0)
-                return INTERSECT;
+                return true;
             else if (det_q2_r2_p1 == 0)
-                return INTERSECT;
+                return true;
             else if (det_r2_p2_p1 == 0)
-                return INTERSECT;
+                return true;
             else 
-                return DOESNT_INTERSECT;
+                return false;
         }
 
         
@@ -509,12 +430,10 @@ namespace lingeo {
         {
             if (det_p2_q2_p1 > 0 && det_q2_r2_p1 < 0 && det_r2_p2_p1 < 0)
             {
-                std::cout << "p1_belongs_R2" << std::endl;
                 return p1_belongs_R2(T1, T2);
             }
             if (det_p2_q2_p1 > 0 && det_q2_r2_p1 > 0 && det_r2_p2_p1 < 0)
             {
-                std::cout << "p1_belongs_R1" << std::endl;
                 return p1_belongs_R1(T1, T2);
             }
             T2.circular_permutation();
@@ -522,20 +441,16 @@ namespace lingeo {
             det_p2_q2_p1 = det_abc(T2.p(), T2.q(), T1.p());
             det_q2_r2_p1 = det_abc(T2.q(), T2.r(), T1.p());
             det_r2_p2_p1 = det_abc(T2.r(), T2.p(), T1.p());
-
-            std::cout << "det_p2_q2_p1 = " << det_p2_q2_p1 << std::endl;
-            std::cout << "det_q2_r2_p1 = " << det_q2_r2_p1 << std::endl;
-            std::cout << "det_r2_p2_p1 = " << det_r2_p2_p1 << "\n" << std::endl;
         }
 
-        return DOESNT_INTERSECT;
+        return false;
     }
 
 
-    int intersection_3D_triangles(Triangle_t T1, Triangle_t T2)
+    bool intersection_3D_triangles(Triangle_t T1, Triangle_t T2)
     {
-        int result1 = intersection_of_triangle_and_plane(T1, T2);
-        int result2 = intersection_of_triangle_and_plane(T2, T1);
+        Positions result1 = intersection_of_triangle_and_plane(T1, T2);
+        Positions result2 = intersection_of_triangle_and_plane(T2, T1);
 
         if (result1 == INTERSECT && result2 == INTERSECT)
         {
@@ -547,7 +462,7 @@ namespace lingeo {
         }
         else
         {
-            return DOESNT_INTERSECT;
+            return false;
         }
     }
 
