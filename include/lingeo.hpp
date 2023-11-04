@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include "double_comparison.hpp"
 
 //TODO: add segment and degenerate cases - they are correct cases
 //TODO: one defenition row (на cppreference), 3-d Vladimirov lection. Функции, которые в хэдере должны быть inline! Например, подключение в разные cpp'ки один hpp, на этапе линковки свалится. Если же
@@ -61,7 +62,7 @@ namespace lingeo {
             double z() const { return z_; }
     };
 
-    double det_abcd(const Point_t &a, const Point_t &b, const Point_t &c, const Point_t &d)
+    double det(const Point_t &a, const Point_t &b, const Point_t &c, const Point_t &d)
     {
         if (a.valid() && b.valid() && c.valid())
         {
@@ -75,7 +76,7 @@ namespace lingeo {
         }
     }
 
-    double det_abc(const Point_t &a, const Point_t &b, const Point_t &c, Axes axis = Z) // get enum
+    double det(const Point_t &a, const Point_t &b, const Point_t &c, Axes axis = Z)
     {
         if (a.valid() && b.valid() && c.valid())
         {
@@ -119,15 +120,15 @@ namespace lingeo {
 
             void project_onto_plane()
             {
-                if (det_abc(p_, q_, r_, Z) == 0) //TODO: change to double and think about how can I correctly compare doubles
+                if (cmp::is_0(det(p_, q_, r_, Z)))
                 {
-                    if (det_abc(p_, q_, r_, Y) == 0)
+                    if (cmp::is_0(det(p_, q_, r_, Y)))
                     {
                         p_.project_onto_YZ();
                         q_.project_onto_YZ();
                         r_.project_onto_YZ();
                     }
-                    else //if (det_abc(T.p(), T.q(), T.r(), X) == 0)
+                    else
                     {                        
                         p_.project_onto_XZ();
                         q_.project_onto_XZ();
@@ -149,7 +150,7 @@ namespace lingeo {
 
             void arrange_counterclockwise()
             {
-                if (det_abc(p_, q_, r_) < 0)
+                if (cmp::less(det(p_, q_, r_),0))
                 {
                     swap_q_r();
                 }
@@ -172,18 +173,18 @@ namespace lingeo {
 
     Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) //TODO: think about receive using const ref in everyone method except manager funtion
     {
-        double p2_q2_r2_p1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.p());
-        double p2_q2_r2_q1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.q()); // receive using reference!
-        double p2_q2_r2_r1 = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
+        double p2_q2_r2_p1 = det(T2.p(), T2.q(), T2.r(), T1.p());
+        double p2_q2_r2_q1 = det(T2.p(), T2.q(), T2.r(), T1.q()); // receive using reference!
+        double p2_q2_r2_r1 = det(T2.p(), T2.q(), T2.r(), T1.r());
 
         if (!std::isnan(p2_q2_r2_p1) && !std::isnan(p2_q2_r2_q1) != NAN && !std::isnan(p2_q2_r2_r1) != NAN)
         {
-            if ((p2_q2_r2_p1 > 0 && p2_q2_r2_q1 > 0 && p2_q2_r2_r1 > 0) ||
-                (p2_q2_r2_p1 < 0 && p2_q2_r2_q1 < 0 && p2_q2_r2_r1 < 0))
+            if ((cmp::greater(p2_q2_r2_p1, 0) && cmp::greater(p2_q2_r2_q1, 0) && cmp::greater(p2_q2_r2_r1, 0)) ||
+                (cmp::less(p2_q2_r2_p1, 0) && cmp::less(p2_q2_r2_q1, 0) && cmp::less(p2_q2_r2_r1, 0)))
             {
                 return DOESNT_INTERSECT;
             }
-            else if (p2_q2_r2_p1 == 0 && p2_q2_r2_q1 == 0 && p2_q2_r2_r1 == 0)
+            else if (cmp::is_0(p2_q2_r2_p1) && cmp::is_0(p2_q2_r2_q1) && cmp::is_0(p2_q2_r2_r1))
             {
                 return COPLANAR;
             }
@@ -198,16 +199,11 @@ namespace lingeo {
         }
     }
 
-    template<typename T> int sgn(T val)
-    {
-        return (T(0) < val) - (val < T(0));
-    }
-
     bool arrange_3D_triangle_points(Triangle_t T1, Triangle_t T2)
     {
-        int det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: I need only sign of this expression. Merge 'sgn()' and 'det()'
-        int det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
-        int det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
+        int det_p = det(T2.p(), T2.q(), T2.r(), T1.p()); 
+        int det_q = det(T2.p(), T2.q(), T2.r(), T1.q());
+        int det_r = det(T2.p(), T2.q(), T2.r(), T1.r());
 
         if (det_p == 0 && det_q == 0 && det_r == 0)
         {
@@ -215,14 +211,14 @@ namespace lingeo {
         }
         for (int i = 0; i < 3; ++i)
         {
-            if ( (sgn<int>(det_q) == sgn<int>(det_r)) && (sgn<int>(det_p) != sgn<int>(det_q)) ) // by construction, the last check can be removed
+            if ( (cmp::sign(det_q) == cmp::sign(det_r)) && (cmp::sign(det_p) != cmp::sign(det_q)) ) // by construction, the last check can be removed
             {
-                if (sgn<int>(det_p) < 0)
+                if (cmp::sign(det_p) < 0)
                 {
                     T2.swap_q_r();
                     break;
                 }
-                else if (sgn<int>(det_p) == 0 && sgn<int>(det_q) > 0)
+                else if (cmp::sign(det_p) == 0 && cmp::sign(det_q) > 0)
                 {
                     T2.swap_q_r();
                 }
@@ -232,9 +228,9 @@ namespace lingeo {
             {
                 T1.circular_permutation();
             }
-            det_p = det_abcd(T2.p(), T2.q(), T2.r(), T1.p()); //TODO: I need only sign of this expression. Merge 'sgn()' and 'det()'
-            det_q = det_abcd(T2.p(), T2.q(), T2.r(), T1.q());
-            det_r = det_abcd(T2.p(), T2.q(), T2.r(), T1.r());
+            det_p = det(T2.p(), T2.q(), T2.r(), T1.p());
+            det_q = det(T2.p(), T2.q(), T2.r(), T1.q());
+            det_r = det(T2.p(), T2.q(), T2.r(), T1.r());
         }
         return true;
     }
@@ -247,7 +243,7 @@ namespace lingeo {
             return false;
         }
 
-        if (det_abcd(T1.p(), T1.q(), T2.p(), T2.q()) <= 0 && det_abcd(T1.p(), T1.r(), T2.r(), T2.p()) <= 0)
+        if (cmp::less_equal(det(T1.p(), T1.q(), T2.p(), T2.q()), 0) && cmp::less_equal(det(T1.p(), T1.r(), T2.r(), T2.p()), 0))
         {
             return true;
         }
@@ -257,17 +253,17 @@ namespace lingeo {
 
     bool p1_belongs_R1(Triangle_t T1, Triangle_t T2)
     {
-        if (det_abc(T2.r(), T2.p(), T1.q()) >= 0)
+        if (cmp::greater_equal(det(T2.r(), T2.p(), T1.q()), 0))
         {
-            if (det_abc(T2.r(), T1.p(), T1.q()) >= 0)
+            if (cmp::greater_equal(det(T2.r(), T1.p(), T1.q()), 0))
             {
-                if (det_abc(T1.p(), T2.p(), T1.q()) >= 0)
+                if (cmp::greater_equal(det(T1.p(), T2.p(), T1.q()), 0))
                     return false;
                 else
                 {
-                    if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
+                    if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
                     {
-                        if (det_abc(T1.q(), T1.r(), T2.p()) >= 0)
+                        if (cmp::greater_equal(det(T1.q(), T1.r(), T2.p()), 0))
                             return true;
                         else
                             return false;
@@ -281,11 +277,11 @@ namespace lingeo {
         }
         else
         {
-            if (det_abc(T2.r(), T2.p(), T1.r()) >= 0)
+            if (cmp::greater_equal(det(T2.r(), T2.p(), T1.r()), 0))
             {
-                if (det_abc(T1.q(), T1.r(), T2.r()) >= 0)
+                if (cmp::greater_equal(det(T1.q(), T1.r(), T2.r()), 0))
                 {
-                    if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
+                    if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
                         return true;
                     else
                         return false;
@@ -300,22 +296,22 @@ namespace lingeo {
 
     bool p1_belongs_R2(Triangle_t T1, Triangle_t T2)
     {
-        if (det_abc(T2.r(), T2.p(), T1.q()) >= 0)
+        if (cmp::greater_equal(det(T2.r(), T2.p(), T1.q()), 0))
         {
-            if (det_abc(T2.q(), T2.r(), T1.q()) >= 0)
+            if (cmp::greater_equal(det(T2.q(), T2.r(), T1.q()), 0))
             {
-                if (det_abc(T1.p(), T2.p(), T1.q()) >= 0)
+                if (cmp::greater_equal(det(T1.p(), T2.p(), T1.q()), 0))
                 {
-                    if (det_abc(T1.p(), T2.q(), T1.q()) > 0)
+                    if (cmp::greater(det(T1.p(), T2.q(), T1.q()), 0))
                         return false;
                     else
                         return true;
                 }
                 else 
                 {
-                    if (det_abc(T1.p(), T2.p(), T1.r()) >= 0)
+                    if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
                     {
-                        if (det_abc(T2.r(), T2.p(), T1.r()) >= 0)
+                        if (cmp::greater_equal(det(T2.r(), T2.p(), T1.r()), 0))
                             return true;
                         else
                             return false;
@@ -326,11 +322,11 @@ namespace lingeo {
             }
             else
             {
-                if (det_abc(T1.p(), T2.q(), T1.q()) <= 0)
+                if (cmp::less_equal(det(T1.p(), T2.q(), T1.q()), 0))
                 {
-                    if (det_abc(T2.q(), T2.r(), T1.r()) >= 0)
+                    if (cmp::greater_equal(det(T2.q(), T2.r(), T1.r()), 0))
                     {
-                        if (det_abc(T1.q(), T1.r(), T2.q()) >= 0)
+                        if (cmp::greater_equal(det(T1.q(), T1.r(), T2.q()), 0))
                             return true;
                         else
                             return false;
@@ -344,20 +340,20 @@ namespace lingeo {
         }
         else
         {
-            if (det_abc(T2.r(), T2.p(), T1.r()) >= 0)
+            if (cmp::greater_equal(det(T2.r(), T2.p(), T1.r()), 0))
             {
-                if (det_abc(T1.q(), T1.r(), T2.r()) >= 0)
+                if (cmp::greater_equal(det(T1.q(), T1.r(), T2.r()), 0))
                 {
-                    if (det_abc(T1.r(), T1.p(), T2.p()) >= 0)
+                    if (cmp::greater_equal(det(T1.r(), T1.p(), T2.p()), 0))
                         return true;
                     else
                         return false;
                 }
                 else
                 {
-                    if (det_abc(T1.q(), T1.r(), T2.q()) >= 0)
+                    if (cmp::greater_equal(det(T1.q(), T1.r(), T2.q()), 0))
                     {
-                        if (det_abc(T2.q(), T2.r(), T1.r()) >= 0)
+                        if (cmp::greater_equal(det(T2.q(), T2.r(), T1.r()), 0))
                             return true;
                         else
                             return false;
@@ -379,47 +375,47 @@ namespace lingeo {
         T1.arrange_counterclockwise();
         T2.arrange_counterclockwise();
 
-        double det_p2_q2_p1 = det_abc(T2.p(), T2.q(), T1.p());
-        double det_q2_r2_p1 = det_abc(T2.q(), T2.r(), T1.p());
-        double det_r2_p2_p1 = det_abc(T2.r(), T2.p(), T1.p());
+        double det_p2_q2_p1 = det(T2.p(), T2.q(), T1.p());
+        double det_q2_r2_p1 = det(T2.q(), T2.r(), T1.p());
+        double det_r2_p2_p1 = det(T2.r(), T2.p(), T1.p());
 
-        if (det_q2_r2_p1 == 0 && det_r2_p2_p1 == 0 && det_p2_q2_p1 == 0)
+        if (cmp::is_0(det_q2_r2_p1) && cmp::is_0(det_r2_p2_p1) && cmp::is_0(det_p2_q2_p1))
         {
             return false;
         }
-        else if (det_q2_r2_p1 > 0 && det_r2_p2_p1 > 0 && det_p2_q2_p1 > 0)
+        else if (cmp::greater(det_q2_r2_p1, 0) && cmp::greater(det_r2_p2_p1, 0) && cmp::greater(det_p2_q2_p1, 0))
         {
             return true;
         }
-        else if (det_q2_r2_p1 == 0)
+        else if (cmp::is_0(det_q2_r2_p1))
         {
-            if (det_r2_p2_p1 > 0 && det_p2_q2_p1 > 0)
+            if (cmp::greater(det_r2_p2_p1, 0) && cmp::greater(det_p2_q2_p1, 0))
                 return true;
-            else if (det_r2_p2_p1 == 0)
+            else if (cmp::is_0(det_r2_p2_p1))
                 return true;
-            else if (det_p2_q2_p1 == 0)
+            else if (cmp::is_0(det_p2_q2_p1))
                 return true;
             else
                 return false;
         }
-        else if (det_r2_p2_p1 == 0)
+        else if (cmp::is_0(det_r2_p2_p1))
         {
-            if (det_q2_r2_p1 > 0 && det_p2_q2_p1 > 0)
+            if (cmp::greater(det_q2_r2_p1, 0) && cmp::greater(det_p2_q2_p1, 0))
                 return true;
-            else if (det_q2_r2_p1 == 0)
+            else if (cmp::is_0(det_q2_r2_p1))
                 return true;
-            else if (det_p2_q2_p1 == 0)
+            else if (cmp::is_0(det_p2_q2_p1))
                 return true;
             else
                 return false;
         }
-        else if (det_p2_q2_p1 == 0)
+        else if (cmp::is_0(det_p2_q2_p1))
         {
-            if (det_q2_r2_p1 > 0 && det_r2_p2_p1 > 0)
+            if (cmp::greater(det_q2_r2_p1, 0) && cmp::greater(det_r2_p2_p1, 0))
                 return true;
-            else if (det_q2_r2_p1 == 0)
+            else if (cmp::is_0(det_q2_r2_p1))
                 return true;
-            else if (det_r2_p2_p1 == 0)
+            else if (cmp::is_0(det_r2_p2_p1))
                 return true;
             else 
                 return false;
@@ -428,19 +424,19 @@ namespace lingeo {
         
         for (int i = 0; i < 3; ++i)
         {
-            if (det_p2_q2_p1 > 0 && det_q2_r2_p1 < 0 && det_r2_p2_p1 < 0)
+            if (cmp::greater(det_p2_q2_p1, 0) && cmp::less(det_q2_r2_p1, 0) && cmp::less(det_r2_p2_p1, 0))
             {
                 return p1_belongs_R2(T1, T2);
             }
-            if (det_p2_q2_p1 > 0 && det_q2_r2_p1 > 0 && det_r2_p2_p1 < 0)
+            if (cmp::greater(det_p2_q2_p1, 0) && cmp::greater(det_q2_r2_p1, 0) && cmp::less(det_r2_p2_p1, 0))
             {
                 return p1_belongs_R1(T1, T2);
             }
             T2.circular_permutation();
 
-            det_p2_q2_p1 = det_abc(T2.p(), T2.q(), T1.p());
-            det_q2_r2_p1 = det_abc(T2.q(), T2.r(), T1.p());
-            det_r2_p2_p1 = det_abc(T2.r(), T2.p(), T1.p());
+            det_p2_q2_p1 = det(T2.p(), T2.q(), T1.p());
+            det_q2_r2_p1 = det(T2.q(), T2.r(), T1.p());
+            det_r2_p2_p1 = det(T2.r(), T2.p(), T1.p());
         }
 
         return false;
