@@ -27,10 +27,11 @@ namespace lingeo {
     class Point_t final {
 
         double x_= NAN, y_ = NAN, z_ = NAN;
+        using coord_it = typename std::vector<double>::iterator;
 
         public:
 
-            Point_t(double x, double y, double z) : x_{x}, y_{y}, z_{z} {};
+            Point_t(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
 
             void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
             
@@ -99,8 +100,7 @@ namespace lingeo {
 
         public:
 
-            Triangle_t(const std::vector<double> &coords) : p_{coords[0], coords[1], coords[2]}, q_{coords[3], coords[4], coords[5]}, 
-                                                    r_{coords[6], coords[7], coords[8]} {} // receive three Point_t
+            Triangle_t(const Point_t &p, const Point_t &q, const Point_t &r) : p_{p}, q_{q}, r_{r} {}
 
             void print() const { 
                 std::cout << "p";
@@ -115,8 +115,6 @@ namespace lingeo {
                 r_.print();
                 std::cout << std::endl;
             }
-
-
 
             void project_onto_plane()
             {

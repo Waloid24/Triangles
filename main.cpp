@@ -12,47 +12,41 @@ const int NUMBER_OF_DOTS = 3;
 
 */
 
-int main (int argc, char *argv[])
+int main ()
 {
-    if (argc != 2)
+    int n_triangles;
+    std::cin >> n_triangles;
+
+    std::vector<double> coordinates;
+    std::vector<lingeo::Point_t> points;
+    std::vector<lingeo::Triangle_t> triangles;
+
+    using coord_it  = typename std::vector<double>::iterator;
+    using points_it = typename std::vector<lingeo::Point_t>::iterator;
+
+    coord_it begin = coordinates.begin();
+    coord_it end   = coordinates.end();
+    int n_coordinates = n_triangles*9;
+
+    for (int i = 1; i <= n_coordinates; ++i, ++end)
     {
-        std::cerr << "You should enter one arguments: the number of triangles" << std::endl;
-        return 1;
-    }
-
-
-    int triangles_num = std::atoi(argv[1]);
-
-    std::cout << "Please enter " << triangles_num << " sets of dots of five dots each to create triangles: " << std::endl;
-
-    std::vector<double> dots_array_1;
-    for (int i = 0; i < 9; ++i)
-    {
-        double coordinate = 0;
+        double coordinate;
         std::cin >> coordinate;
-        if (!std::cin.good())
+        coordinates.push_back(coordinate);
+
+        if (i % 3 == 0)
         {
-            std::abort();
+            points.emplace_back(coordinates[i-3], coordinates[i-2], coordinates[i-1]);
+            begin = end;
         }
-        dots_array_1.push_back(coordinate);
     }
 
-    std::vector<double> dots_array_2;
-    for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < n_triangles*3; i=i+3)
     {
-        double coordinate = 0;
-        std::cin >> coordinate;
-        if (!std::cin.good())
-        {
-            std::abort();
-        }
-        dots_array_2.push_back(coordinate);
+        triangles.emplace_back(points[i], points[i+1], points[i+2]);
     }
 
-    lingeo::Triangle_t T1{dots_array_1};
-    lingeo::Triangle_t T2{dots_array_2};
-
-    bool result = intersection_3D_triangles(T1, T2);
+    bool result = intersection_3D_triangles(triangles[0], triangles[1]);
 
     if (result)
     {
