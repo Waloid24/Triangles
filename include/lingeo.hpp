@@ -164,7 +164,7 @@ namespace lingeo {
             }
 
             Point_t p() const { return p_; }
-            Point_t q() const { return q_; } // output using reference!
+            Point_t q() const { return q_; } 
             Point_t r() const { return r_; }
 
     };
@@ -256,7 +256,9 @@ namespace lingeo {
             if (cmp::greater_equal(det(T2.r(), T1.p(), T1.q()), 0))
             {
                 if (cmp::greater_equal(det(T1.p(), T2.p(), T1.q()), 0))
-                    return false;
+                {
+                    return true;
+                }
                 else
                 {
                     if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
@@ -280,9 +282,13 @@ namespace lingeo {
                 if (cmp::greater_equal(det(T1.q(), T1.r(), T2.r()), 0))
                 {
                     if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
+                    {
                         return true;
+                    }
                     else
+                    {
                         return false;
+                    }
                 }
                 else
                     return false;
@@ -315,7 +321,9 @@ namespace lingeo {
                             return false;
                     }
                     else
+                    {
                         return false;
+                    }
                 }
             }
             else
@@ -352,7 +360,9 @@ namespace lingeo {
                     if (cmp::greater_equal(det(T1.q(), T1.r(), T2.q()), 0))
                     {
                         if (cmp::greater_equal(det(T2.q(), T2.r(), T1.r()), 0))
+                        {
                             return true;
+                        }
                         else
                             return false;
                     }
@@ -422,7 +432,7 @@ namespace lingeo {
         
         for (int i = 0; i < 3; ++i)
         {
-            if (cmp::greater(det_p2_q2_p1, 0) && cmp::less(det_q2_r2_p1, 0) && cmp::less(det_r2_p2_p1, 0))
+            if (cmp::greater_equal(det_p2_q2_p1, 0) && cmp::less_equal(det_q2_r2_p1, 0) && cmp::less_equal(det_r2_p2_p1, 0))
             {
                 return p1_belongs_R2(T1, T2);
             }

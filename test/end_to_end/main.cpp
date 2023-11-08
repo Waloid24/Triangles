@@ -1,16 +1,10 @@
 #include <iostream>
 #include <vector>
-#include "include/lingeo.hpp"
+#include "../../include/lingeo.hpp"
 
 
 const int NUMBER_OF_COORDINATES = 3;
 const int NUMBER_OF_DOTS = 3;
-
-/*
-
-окто-дерево для пространства, сделать это перед end-to-end
-
-*/
 
 int main ()
 {

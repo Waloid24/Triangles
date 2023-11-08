@@ -24,25 +24,25 @@ namespace cmp {
     }
 
     bool greater(double A, double B,
-        double max_diff = min_number, double max_rel_diff = DBL_EPSILON)
+        double max_diff = min_number, double max_rel_diff = min_number)
     {
         return (A > B) && !is_equal(A, B, max_diff, max_rel_diff);
     }
 
     bool less(double A, double B,
-        double max_diff = min_number, double max_rel_diff = DBL_EPSILON)
+        double max_diff = min_number, double max_rel_diff = min_number)
     {
         return (A < B) && !is_equal(A, B, max_diff, max_rel_diff);
     }
 
     bool greater_equal(double A, double B,
-        double max_diff = min_number, double max_rel_diff = DBL_EPSILON)
+        double max_diff = min_number, double max_rel_diff = min_number)
     {
         return (A > B) || is_equal(A, B, max_diff, max_rel_diff);
     }
 
     bool less_equal(double A, double B,
-        double max_diff = min_number, double max_rel_diff = DBL_EPSILON)
+        double max_diff = min_number, double max_rel_diff = min_number)
     {
         return (A < B) || is_equal(A, B, max_diff, max_rel_diff);
     }
