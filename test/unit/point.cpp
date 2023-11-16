@@ -2,14 +2,14 @@
 #include "../../include/lingeo.hpp"
 
 struct PointMain : public testing::Test {
-    lingeo::Point_t *p;
-    lingeo::Point_t *q;
-    lingeo::Point_t *r;
+    Point_t *p;
+    Point_t *q;
+    Point_t *r;
 
     void SetUp() { 
-        p = new lingeo::Point_t{0, 4, 0};
-        q = new lingeo::Point_t{0, 0, 4};
-        r = new lingeo::Point_t{0, -4, 0};
+        p = new Point_t{0, 4, 0};
+        q = new Point_t{0, 0, 4};
+        r = new Point_t{0, -4, 0};
     }
     void TearDown() {
         delete p;

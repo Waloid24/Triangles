@@ -51,6 +51,27 @@ namespace cmp {
     {
         return greater(val, 0) - less(val, 0); 
     }
+
+    double &max(double &l, double &r) //TODO: check for a dead parrot
+    {
+        if (greater_equal(l, r))
+        {
+            return l;
+        }
+        else
+        {
+            return r;
+        }
+    }
+
+    int round(double num)
+    {
+        int tmp = (int)num;
+        if (is_equal(tmp, num))
+            return tmp;
+        else
+            return ++tmp;
+    }
 }
 
 #endif

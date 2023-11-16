@@ -3,9 +3,9 @@
 
 TEST(TriangleMain, swap)
 {
-    lingeo::Point_t p{0, 4, 0};
-    lingeo::Point_t q{0, 0, 4};
-    lingeo::Point_t r{0, -4, 0};
+    Point_t p{0, 4, 0};
+    Point_t q{0, 0, 4};
+    Point_t r{0, -4, 0};
 
     lingeo::Triangle_t tr{p, q, r};
 
@@ -15,9 +15,9 @@ TEST(TriangleMain, swap)
 
 TEST(TriangleMain, projectionZYintoXY)
 {
-    lingeo::Point_t p{0, 4, 0};
-    lingeo::Point_t q{0, 0, 4};
-    lingeo::Point_t r{0, -4, 0};
+    Point_t p{0, 4, 0};
+    Point_t q{0, 0, 4};
+    Point_t r{0, -4, 0};
 
     lingeo::Triangle_t tr{p, q, r};
 
@@ -27,9 +27,9 @@ TEST(TriangleMain, projectionZYintoXY)
 
 TEST(TriangleMain, projectionXZintoXY)
 {
-    lingeo::Point_t p{-6, 0, 0};
-    lingeo::Point_t q{0, 0, 4};
-    lingeo::Point_t r{4, 0, 0};
+    Point_t p{-6, 0, 0};
+    Point_t q{0, 0, 4};
+    Point_t r{4, 0, 0};
 
     lingeo::Triangle_t tr{p, q, r};
 
@@ -39,9 +39,9 @@ TEST(TriangleMain, projectionXZintoXY)
 
 TEST(TriangleMain, projectionXYintoXY)
 {
-    lingeo::Point_t p{-2, 0, 1};
-    lingeo::Point_t q{2, 2, 1};
-    lingeo::Point_t r{0, -2, 1};
+    Point_t p{-2, 0, 1};
+    Point_t q{2, 2, 1};
+    Point_t r{0, -2, 1};
 
     lingeo::Triangle_t tr{p, q, r};
 
@@ -51,9 +51,9 @@ TEST(TriangleMain, projectionXYintoXY)
 
 TEST(TriangleMain, arrange_ctclckws)
 {
-    lingeo::Point_t p{-2, 0, 1};
-    lingeo::Point_t q{2, 2, 1};
-    lingeo::Point_t r{0, -2, 1};
+    Point_t p{-2, 0, 1};
+    Point_t q{2, 2, 1};
+    Point_t r{0, -2, 1};
 
     lingeo::Triangle_t tr{p, q, r};
 
@@ -63,9 +63,9 @@ TEST(TriangleMain, arrange_ctclckws)
 
 TEST(TriangleMain, circular_permutation)
 {
-    lingeo::Point_t p{-2, 0, 1};
-    lingeo::Point_t q{2, 2, 1};
-    lingeo::Point_t r{0, -2, 1};
+    Point_t p{-2, 0, 1};
+    Point_t q{2, 2, 1};
+    Point_t r{0, -2, 1};
 
     lingeo::Triangle_t tr{p, q, r};
 

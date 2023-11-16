@@ -6,6 +6,9 @@
 #include <utility>
 #include <cmath>
 
+namespace lingeo
+{
+
 class Point_t final {
 
         double x_= NAN, y_ = NAN, z_ = NAN;
@@ -43,7 +46,7 @@ class Point_t final {
             double x() const { return x_; }
             double y() const { return y_; }
             double z() const { return z_; }
-    };
+};
 
     double det(const Point_t &a, const Point_t &b, const Point_t &c, const Point_t &d)
     {
@@ -81,5 +84,7 @@ class Point_t final {
             return NAN;
         }
     }
+
+}
 
 #endif

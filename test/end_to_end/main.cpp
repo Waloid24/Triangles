@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "../../include/lingeo.hpp"
-
+#include "../../include/octree.hpp"
 
 const int NUMBER_OF_COORDINATES = 3;
 const int NUMBER_OF_DOTS = 3;
@@ -12,11 +12,11 @@ int main ()
     std::cin >> n_triangles;
 
     std::vector<double> coordinates;
-    std::vector<lingeo::Point_t> points;
+    std::vector<Point_t> points;
     std::vector<lingeo::Triangle_t> triangles;
 
     using coord_it  = typename std::vector<double>::iterator;
-    using points_it = typename std::vector<lingeo::Point_t>::iterator;
+    using points_it = typename std::vector<Point_t>::iterator;
 
     coord_it begin = coordinates.begin();
     coord_it end   = coordinates.end();
@@ -51,5 +51,13 @@ int main ()
         std::cout << "\033[31;1m DOESN'T INTERSECT \033[0m" << std::endl;
     }
 
+    lingeo::Vector3 vec1{16, 16, 16};
+    lingeo::Vector3 vec2{-16, -16, -16};
+
+    lingeo::Bounding_box region{vec1, vec2};
+
+    octree::OctTree_t octree{region, triangles.begin(), triangles.end()};
+
+    octree.update_tree();
 
 }
