@@ -14,8 +14,8 @@ namespace octree {
 
 class Bounding_box {
 
-    lingeo::Vector3 max_;
-    lingeo::Vector3 min_;
+    lingeo::Vector3 max_{NAN, NAN, NAN};
+    lingeo::Vector3 min_{NAN, NAN, NAN};
 
     public:
 
@@ -33,13 +33,11 @@ class Bounding_box {
             }
         }
 
-        lingeo::Vector3 max() const
-            return max_;
+        lingeo::Vector3 max() const { return max_; }
 
-        lingeo::Vector3 min() const
-            return min_;
+        lingeo::Vector3 min() const { return min_; }
 
-        void find_enclosing_cube ()
+        void find_enclosing_cube()
         {
             lingeo::Vector3 offset = lingeo::Vector3{0, 0, 0} - min_;
             min_ += offset;
@@ -51,7 +49,8 @@ class Bounding_box {
             {
                 if (largest_size == (1 << bit)) //TODO: is it the correct to compare this way?
                 {
-                    max_{largest_size, largest_size, largest_size}; //TODO: is memory leaking?
+                    // lingeo::Vector3 tmp{largest_size, largest_size, largest_size};
+                    max_.change_values(largest_size, largest_size, largest_size);
 
                     min_ -= offset;
                     max_ -= offset;
@@ -61,7 +60,7 @@ class Bounding_box {
 
             int x = find_highest_pow_two(largest_size);
 
-            max_{x, x, x}; //TODO: is memory leaking?
+            max_.change_values(x, x, x); //TODO: is memory leaking?
             min_ -= offset;
             max_ -= offset;
         }
@@ -163,13 +162,13 @@ class OctTree_t {
 
             lingeo::Vector3 dimensions = region_.max() - region_.min();
 
-            if (dimensions == lingeo::Vector3{0, 0, 0})
+            if (dimensions == lingeo::Vector3{0})
             {
-                find_enclosing_cube();
+                region_.find_enclosing_cube();
                 dimensions = region_.max() - region_.min();
             }
 
-            if (dimensions.x <= MIN_SIZE && dimensions.y <= MIN_SIZE && dimensions.z <= MIN_SIZE)
+            if (dimensions.x() <= MIN_SIZE && dimensions.y() <= MIN_SIZE && dimensions.z() <= MIN_SIZE)
             {
                 return;
             }
@@ -193,11 +192,11 @@ class OctTree_t {
 
             for (tr_list_it it = objects_.begin(), ite = objects_.end(); it != ite; ++it)
             {
-                if (obj.Bounding_box.min != obj.Bounding_box.max)
+                if (it->Bounding_box.min != it->Bounding_box.max)
                 {
                     for (int a = 0; a < 8; ++a)
                     {
-                        if (octant[a].contains(obj.Bounding_box))
+                        if (octant[a].contains(it->get_bounding_box()))
                         {
                             oct_list[a].push_back(*it);
                             del_list.push_back(it);

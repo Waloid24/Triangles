@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "../../include/lingeo.hpp"
+#include "../../include/triangle.hpp"
 #include "../../include/octree.hpp"
 
 const int NUMBER_OF_COORDINATES = 3;
@@ -12,7 +12,7 @@ int main ()
     std::cin >> n_triangles;
 
     std::vector<double> coordinates;
-    std::vector<Point_t> points;
+    std::vector<lingeo::Point_t> points;
     std::vector<lingeo::Triangle_t> triangles;
 
     using coord_it  = typename std::vector<double>::iterator;

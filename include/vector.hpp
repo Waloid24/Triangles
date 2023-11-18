@@ -14,6 +14,14 @@ class Vector3 final { //maybe it's a class derived from a Point_t?
 
         Vector3(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
         Vector3(Point_t point) : x_{point.x()}, y_{point.y()}, z_{point.z()} {}
+        Vector3(double num) : x_{num}, y_{num}, z_{num} {}
+
+        void change_values(double x, double y, double z)
+        {
+            x_ = x;
+            y_ = y;
+            z_ = z;
+        }
 
         void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
 
@@ -100,6 +108,12 @@ Vector3 operator/ (const Vector3 &lhs, const Vector3 &rhs)
 {
     Vector3 tmp{lhs};
     tmp /= rhs;
+    return tmp;
+}
+
+Vector3 operator/ (const Vector3 &lhs, const double &num)
+{
+    Vector3 tmp{num};
     return tmp;
 }
 

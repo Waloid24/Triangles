@@ -4,6 +4,7 @@
 #include <iostream>
 #include "double_comparison.hpp"
 #include "point.hpp"
+#include "bounding_objs.hpp"
 
 //TODO: add segment and degenerate cases - they are correct cases
 //TODO: one defenition row (на cppreference), 3-d Vladimirov lection. Функции, которые в хэдере должны быть inline! Например, подключение в разные cpp'ки один hpp, на этапе линковки свалится. Если же
@@ -17,14 +18,18 @@ namespace lingeo {
         COPLANAR
     } Positions;
 
-
     class Triangle_t final {
 
         Point_t p_, q_, r_;
+        Bounding_box box_{NAN, NAN, NAN, NAN};
 
         public:
 
-            Triangle_t(const Point_t &p, const Point_t &q, const Point_t &r) : p_{p}, q_{q}, r_{r} {}
+            Triangle_t(const Point_t &p, const Point_t &q, const Point_t &r) : p_{p}, q_{q}, r_{r} {
+
+                /*create box*/
+
+            }
 
             void print() const { 
                 std::cout << "p";
