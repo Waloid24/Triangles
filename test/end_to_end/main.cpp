@@ -16,7 +16,7 @@ int main ()
     std::vector<lingeo::Triangle_t> triangles;
 
     using coord_it  = typename std::vector<double>::iterator;
-    using points_it = typename std::vector<Point_t>::iterator;
+    using points_it = typename std::vector<lingeo::Point_t>::iterator;
 
     coord_it begin = coordinates.begin();
     coord_it end   = coordinates.end();
@@ -58,6 +58,6 @@ int main ()
 
     octree::OctTree_t octree{region, triangles.begin(), triangles.end()};
 
-    octree.update_tree();
+    
 
 }

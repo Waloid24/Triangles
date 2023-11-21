@@ -6,6 +6,8 @@
 #include <utility>
 #include <cmath>
 
+#include "double_comparison.hpp"
+
 namespace lingeo
 {
 
@@ -16,6 +18,7 @@ class Point_t final {
 
         public:
 
+            Point_t(){}
             Point_t(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
 
             void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
@@ -46,6 +49,42 @@ class Point_t final {
             double x() const { return x_; }
             double y() const { return y_; }
             double z() const { return z_; }
+
+            friend bool operator== (const Point_t &lhs, const Point_t &rhs)
+            {
+                if (cmp::is_equal(lhs.x_, rhs.x_) && cmp::is_equal(lhs.y_, rhs.y_) && cmp::is_equal(lhs.z_, rhs.z_))
+                    return true;
+                else
+                    return false;
+            };
+
+            friend bool operator!= (const Point_t &lhs, const Point_t &rhs)
+            {
+                return !(lhs == rhs);
+            }
+
+            friend bool operator>  (const Point_t &lhs, const Point_t &rhs)
+            {
+                if (cmp::greater(lhs.x_, rhs.x_) && cmp::greater(lhs.y_, rhs.y_) && cmp::greater(lhs.y_, rhs.y_))
+                    return true;
+                else
+                    return false;
+            }
+
+            friend bool operator<  (const Point_t &lhs, const Point_t &rhs)
+            {
+                return rhs > lhs;
+            }
+
+            friend bool operator>=  (const Point_t &lhs, const Point_t &rhs)
+            {
+                return !(lhs < rhs);
+            }
+
+            friend bool operator<=  (const Point_t &lhs, const Point_t &rhs)
+            {
+                return !(lhs > rhs);
+            }
 };
 
     double det(const Point_t &a, const Point_t &b, const Point_t &c, const Point_t &d)

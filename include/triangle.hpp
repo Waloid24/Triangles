@@ -21,13 +21,57 @@ namespace lingeo {
     class Triangle_t final {
 
         Point_t p_, q_, r_;
-        Bounding_box box_{NAN, NAN, NAN, NAN};
+        Bounding_box box_{NAN, NAN, NAN, NAN, NAN, NAN};
 
         public:
 
             Triangle_t(const Point_t &p, const Point_t &q, const Point_t &r) : p_{p}, q_{q}, r_{r} {
 
-                /*create box*/
+                Point_t loc_min;
+                Point_t loc_max;
+
+                if (p > q)
+                {
+                    if (p > r)
+                    {
+                        loc_max = p;
+                        if (q > r)
+                        {
+                            loc_min = r;
+                        }
+                        else
+                        {
+                            loc_min = q;
+                        }
+                    }
+                    else
+                    {
+                        loc_max = r;
+                        loc_min = q;
+                    }
+                }
+                else
+                {
+                    if (q > r)
+                    {
+                        loc_max = q;
+                        if (r > p)
+                        {
+                            loc_min = p;
+                        }
+                        else
+                        {
+                            loc_min = r;
+                        }
+                    }
+                    else
+                    {
+                        loc_max = r;
+                        loc_min = p;
+                    }
+                }
+
+                Bounding_box{loc_min, loc_max, true};
 
             }
 
@@ -91,6 +135,22 @@ namespace lingeo {
                 r_ = temp_q;
                 p_ = temp_r;
             }
+
+            Vector3 get_min_vec_in_bounding_box() const
+            {
+                return box_.min();
+            }
+
+            Vector3 get_max_vec_in_bounding_box() const
+            {
+                return box_.max();
+            }
+
+            Bounding_box get_bounding_box() const 
+            {
+                return box_;
+            }
+
 
             Point_t p() const { return p_; }
             Point_t q() const { return q_; } 

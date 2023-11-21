@@ -1,7 +1,8 @@
 #ifndef BOUNDING_OBJS_HPP
 #define BOUNDING_OBJS_HPP
 
-#include "point.hpp"
+#include "vector.hpp"
+
 
 namespace lingeo {
 
@@ -12,12 +13,20 @@ namespace lingeo {
 
     public:
 
-        Bounding_box(lingeo::Vector3 vec1, lingeo::Vector3 vec2) {
+        Bounding_box(lingeo::Vector3 vec1, lingeo::Vector3 vec2, bool are_ordered = false) {
 
-            if (vec1 >= vec2)
+            if (!are_ordered)
             {
-                max_ = vec1;
-                min_ = vec2;
+                if (vec1 >= vec2)
+                {
+                    max_ = vec1;
+                    min_ = vec2;
+                }
+                else
+                {
+                    max_ = vec2;
+                    min_ = vec1;
+                }
             }
             else
             {
@@ -30,19 +39,21 @@ namespace lingeo {
         {
             if (cmp::greater(x1, x2) && cmp::greater(y1, y2) && cmp::greater(z1, z2))
             {
-                max_ = tmp{x1, y1, z1}; //TODO: very ugly
-                min_ = tmp{x2, y2, z2}; //TODO: very ugly
+                lingeo::Vector3 tmp1{x1, y1, z1};
+                lingeo::Vector3 tmp2{x2, y2, z2};
+                
+                max_ = tmp1; //TODO: very ugly
+                min_ = tmp2; //TODO: very ugly
             }
             else
             {
-                max_ = tmp{x2, y2, z2}; //TODO: very ugly
-                min_ = tmp{x1, y1, z1}; //TODO: very ugly
+                lingeo::Vector3 tmp1{x1, y1, z1};
+                lingeo::Vector3 tmp2{x2, y2, z2};
+
+                max_ = tmp2; //TODO: very ugly
+                min_ = tmp1; //TODO: very ugly
             }
         }
-
-        lingeo::Vector3 max() const { return max_; }
-
-        lingeo::Vector3 min() const { return min_; }
 
         void find_enclosing_cube()
         {
@@ -70,6 +81,18 @@ namespace lingeo {
             max_.change_values(x, x, x); //TODO: is memory leaking?
             min_ -= offset;
             max_ -= offset;
+        }
+
+        lingeo::Vector3 max() const { return max_; }
+
+        lingeo::Vector3 min() const { return min_; }
+
+        bool contains(Bounding_box box) const
+        {
+            if ((max_ > box.max()) && (min_ < box.min()))
+                return true;
+            else
+                return false;   
         }
 
     private:
