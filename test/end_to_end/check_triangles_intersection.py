@@ -4,12 +4,13 @@ import sys
 def get_coords(file_name):
 
     numbers = []
-    with open("./tests/test_0.txt") as test_file:
+    with open(f"{file_name}", "r") as test_file:
         for line in test_file:
             for x in line.split():
                 numbers.append(float(x))
+
     n_triangles = int(numbers[0])
-    numbers.pop()
+    numbers.pop(0)
 
     return numbers, n_triangles
 
@@ -46,7 +47,6 @@ def intersecting_triangles(triangles):
                 if j not in intersecting_indexes:
                     intersecting_indexes.append(j)
                 n_intersections += 1
-
     return intersecting_indexes, n_intersections
 
 def main():
@@ -66,9 +66,8 @@ def main():
         triangles = creating_triangles(points, n_triangles)
         intersecting_indexes, n_intersections = intersecting_triangles(triangles)
         intersecting_indexes.sort()
-        print(f"intersecting_indexes_{it}: {intersecting_indexes}")
 
         with open(answers_file, "w") as ans_file:
-            ans_file.write(f"{n_intersections} \n")
+            ans_file.write(f"{n_intersections}\n")
         
 main()

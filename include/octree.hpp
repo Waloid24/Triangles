@@ -15,7 +15,7 @@ class OctTree_t {
     
     std::list<lingeo::Triangle_t> objects_;
 
-    std::vector<OctTree_t *> child_node;
+    std::array<OctTree_t *, 8> child_node{};
 
     const int MIN_SIZE = 1;
 
@@ -154,7 +154,7 @@ class OctTree_t {
                 if (!oct_array[a].empty())
                 {
                     OctTree_t *new_tree = new OctTree_t{octant[a], oct_array[a].begin(), oct_array[a].end()};
-                    child_node[a] = new_tree; //SIGFAULT!!!!
+                    child_node[a] = new_tree; 
                     child_node[a]->parent_ = this;
 
                     if (child_node[a] != nullptr)
@@ -167,17 +167,6 @@ class OctTree_t {
             is_tree_built = true;
             is_tree_ready = true;
         }
-
-        #if 0
-        void create_node(lingeo::Bounding_box &region, std::vector<lingeo::Triangle_t> &objs, OctTree_t *child_tree)
-        {
-            if (objs.empty())
-                return;
-            
-            *child_tree = new OctTree_t(region, objs.begin(), objs.end());
-            (*child_tree)->parent_ = this;
-        }
-        #endif
 
         void check_intersection_btw_objs(size_t *num_intersections)
         {
@@ -230,7 +219,6 @@ class OctTree_t {
             {
                 if (!child_node.empty() && child_node[i] != nullptr)
                 {
-                    std::cout << "into count_intersection()" << std::endl;
                     child_node[i]->count_intersection(parent_objs, num_intersections);
                 }
             }

@@ -67,7 +67,6 @@ namespace lingeo {
             {
                 if (largest_size == (1 << bit))
                 {
-                    // lingeo::Vector3 tmp{largest_size, largest_size, largest_size};
                     max_.change_values(largest_size, largest_size, largest_size);
 
                     min_ -= offset;

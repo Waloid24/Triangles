@@ -68,7 +68,7 @@ class Vector3 final { //maybe it's a class derived from a Point_t?
 
         friend bool operator>  (const Vector3 &lhs, const Vector3 &rhs)
         {
-            if (cmp::greater(lhs.x_, rhs.x_) && cmp::greater(lhs.y_, rhs.y_) && cmp::greater(lhs.y_, rhs.y_))
+            if (cmp::greater(lhs.x_, rhs.x_) && cmp::greater(lhs.y_, rhs.y_) && cmp::greater(lhs.z_, rhs.z_))
                 return true;
             else
                 return false;
