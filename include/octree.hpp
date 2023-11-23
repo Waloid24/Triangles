@@ -9,8 +9,6 @@
 #include "vector.hpp"
 #include "bounding_objs.hpp"
 
-//TODO: the bounding boxes are a power of two - an integer. Do it.
-
 namespace octree {
 
 class OctTree_t {
@@ -42,7 +40,25 @@ class OctTree_t {
             {
                 pendingInsertion.push(*it);
             }
+        }
 
+        size_t count_intersection_in_octree()
+        {
+            size_t num_intersections = 0;
+
+            update_tree();
+
+            check_intersection_btw_objs(&num_intersections);
+
+            for (int i = 0; i < 8; ++i)
+            {
+                if (!child_node.empty() && child_node[i] != nullptr)
+                {
+                    child_node[i]->count_intersection(objects_, &num_intersections);
+                }
+            }
+
+            return num_intersections;
         }
 
     private:
@@ -56,7 +72,6 @@ class OctTree_t {
                     objects_.push_back(pendingInsertion.front());
                     pendingInsertion.pop();
                 }
-
                 build_tree();
             }
             else
@@ -73,7 +88,6 @@ class OctTree_t {
                     #endif
                 }
             }
-
             is_tree_ready = true;
         }
         
@@ -102,17 +116,17 @@ class OctTree_t {
 
             std::vector<lingeo::Bounding_box> octant;
             octant.emplace_back(region_.min(), center);
-            octant.emplace_back(lingeo::Vector3(center.x(), region_.min().y(), region_.min().z()),    lingeo::Vector3(region_.max().x(), center.y(), center.z()));
-            octant.emplace_back(lingeo::Vector3(center.x(), region_.min().y(), center.z()),           lingeo::Vector3(region_.max().x(), center.y(), region_.max().z()));
+            octant.emplace_back(lingeo::Vector3(center.x(), region_.min().y(), region_.min().z()),  lingeo::Vector3(region_.max().x(), center.y(), center.z()));
+            octant.emplace_back(lingeo::Vector3(center.x(), region_.min().y(), center.z()),         lingeo::Vector3(region_.max().x(), center.y(), region_.max().z()));
             octant.emplace_back(lingeo::Vector3(region_.min().x(), region_.min().y(), center.z()),  lingeo::Vector3(center.x(), center.y(), region_.max().z()));
             octant.emplace_back(lingeo::Vector3(region_.min().x(), center.y(), region_.min().z()),  lingeo::Vector3(center.x(), region_.max().y(), center.z()));
             octant.emplace_back(lingeo::Vector3(center.x(), center.y(), region_.min().z()),         lingeo::Vector3(region_.max().x(), region_.max().y(), center.z()));
             octant.emplace_back(center, region_.max());
             octant.emplace_back(lingeo::Vector3(region_.min().x(), center.y(), center.z()),         lingeo::Vector3(center.x(), region_.max().y(), region_.max().z()));
 
-            std::array<std::vector<lingeo::Triangle_t>, 8> oct_array{};
+            std::array<std::vector<lingeo::Triangle_t>, 8> oct_array;
 
-            std::vector<tr_vec_it> del_list;
+            std::vector<tr_list_it> del_list;
 
             for (tr_list_it it = objects_.begin(), ite = objects_.end(); it != ite; ++it)
             {
@@ -123,18 +137,26 @@ class OctTree_t {
                         if (octant[a].contains(it->get_bounding_box()))
                         {
                             oct_array[a].push_back(*it);
-                            objects_.erase(it);
+                            del_list.push_back(it);
                             break;
                         }
                     }
                 }
+            }
+
+            for (auto obj : del_list)
+            {
+                objects_.erase(obj);
             }
             
             for (int a = 0; a < 8; a++)
             {
                 if (!oct_array[a].empty())
                 {
-                    child_node[a] = create_node(octant[a], oct_array[a]);
+                    OctTree_t *new_tree = new OctTree_t{octant[a], oct_array[a].begin(), oct_array[a].end()};
+                    child_node[a] = new_tree; //SIGFAULT!!!!
+                    child_node[a]->parent_ = this;
+
                     if (child_node[a] != nullptr)
                     {
                         child_node[a]->build_tree();
@@ -146,31 +168,19 @@ class OctTree_t {
             is_tree_ready = true;
         }
 
-        OctTree_t *create_node(lingeo::Bounding_box &region, std::vector<lingeo::Triangle_t> &objects)
+        #if 0
+        void create_node(lingeo::Bounding_box &region, std::vector<lingeo::Triangle_t> &objs, OctTree_t *child_tree)
         {
-            if (!objects.empty())
-                return nullptr;
+            if (objs.empty())
+                return;
             
-            OctTree_t *ret = new OctTree_t(region, objects.begin(), objects.end());
-            ret->parent_ = this;
-
-            return ret;   
+            *child_tree = new OctTree_t(region, objs.begin(), objs.end());
+            (*child_tree)->parent_ = this;
         }
+        #endif
 
-        size_t count_tr_intersection(std::list<lingeo::Triangle_t> &parent_objs)
+        void check_intersection_btw_objs(size_t *num_intersections)
         {
-            size_t num_intersections = 0;
-            for (auto p_obj : parent_objs)
-            {
-                for (auto l_obj : objects_)
-                {
-                    if(lingeo::intersection_3D_triangles(l_obj, p_obj))
-                    {
-                        num_intersections++;
-                    }
-                }
-            }
-
             if (objects_.size() > 1)
             {
                 std::list<lingeo::Triangle_t> tmp = objects_;
@@ -179,30 +189,51 @@ class OctTree_t {
                 {
                     for (tr_list_it l_obj_2 = tmp.begin(), ite = tmp.end(); l_obj_2 != ite; ++l_obj_2)
                     {
-                        tmp_it = std::prev(tmp.end()); //TODO: raise one level up
+                        tmp_it = std::prev(tmp.end());
                         if (tmp_it == l_obj_2)
                             continue;
                         if (lingeo::intersection_3D_triangles(*tmp_it, *l_obj_2))
                         {
-                            num_intersections++;
+                            (*num_intersections)++;
                         }
                     }
                     tmp.pop_back();
                 }
             }
+        }
 
-            // parent_objs.append_range(objects_);
-            for (auto l_obj : objects_) //TODO: enable standard 23
+        void check_intersection_btw_parent_objs_loc_objs(std::list<lingeo::Triangle_t> &parent_objs, size_t *num_intersections)
+        {
+            for (auto p_obj : parent_objs)
+            {
+                for (auto l_obj : objects_)
+                {
+                    if(lingeo::intersection_3D_triangles(l_obj, p_obj))
+                    {
+                        (*num_intersections)++;
+                    }
+                }
+            }
+        }
+
+        void count_intersection(std::list<lingeo::Triangle_t> &parent_objs, size_t *num_intersections)
+        {            
+            check_intersection_btw_parent_objs_loc_objs(parent_objs, num_intersections);
+
+            check_intersection_btw_objs(num_intersections);
+
+            // parent_objs.append_range(objects_); //TODO: enable standard 23
+            for (auto l_obj : objects_) 
                 parent_objs.push_back(l_obj);
 
             for (int i = 0; i < 8; ++i)
             {
                 if (!child_node.empty() && child_node[i] != nullptr)
                 {
-                    num_intersections += child_node[i]->count_tr_intersection(parent_objs);
+                    std::cout << "into count_intersection()" << std::endl;
+                    child_node[i]->count_intersection(parent_objs, num_intersections);
                 }
             }
-            return num_intersections;
         }
 };
 

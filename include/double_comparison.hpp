@@ -52,7 +52,7 @@ namespace cmp {
         return greater(val, 0) - less(val, 0); 
     }
 
-    double &max(double &l, double &r) //TODO: check for a dead parrot
+    double& max(double &l, double &r)
     {
         if (greater_equal(l, r))
         {

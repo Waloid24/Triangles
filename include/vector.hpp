@@ -114,7 +114,7 @@ Vector3 operator/ (const Vector3 &lhs, const Vector3 &rhs)
 Vector3 operator/ (const Vector3 &lhs, const double &num)
 {
     Vector3 tmp{num};
-    return tmp;
+    return lhs / tmp;
 }
 
 Vector3 operator* (const Vector3 &lhs, const Vector3 &rhs)

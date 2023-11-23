@@ -3,7 +3,6 @@
 #include "../../include/triangle.hpp"
 #include "../../include/double_comparison.hpp"
 
-#if 0
 TEST(TriangleTriangle, parallel)
 {
     lingeo::Point_t p1{3, 0, 0};
@@ -223,7 +222,6 @@ TEST(TriangleTriangle, R2_4_a_not_intsct)
 
     EXPECT_EQ(rslt, false);   
 }
-#endif
 
 TEST(TriangleTriangle, R2_4_b_not_intsct)
 {

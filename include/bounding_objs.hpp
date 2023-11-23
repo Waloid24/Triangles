@@ -65,7 +65,7 @@ namespace lingeo {
 
             for (int bit = 0; bit < 32; bit++)
             {
-                if (largest_size == (1 << bit)) //TODO: is it the correct to compare this way?
+                if (largest_size == (1 << bit))
                 {
                     // lingeo::Vector3 tmp{largest_size, largest_size, largest_size};
                     max_.change_values(largest_size, largest_size, largest_size);
@@ -78,7 +78,7 @@ namespace lingeo {
 
             int x = find_highest_pow_two(largest_size);
 
-            max_.change_values(x, x, x); //TODO: is memory leaking?
+            max_.change_values(x, x, x);
             min_ -= offset;
             max_ -= offset;
         }

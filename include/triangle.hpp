@@ -27,51 +27,143 @@ namespace lingeo {
 
             Triangle_t(const Point_t &p, const Point_t &q, const Point_t &r) : p_{p}, q_{q}, r_{r} {
 
-                Point_t loc_min;
-                Point_t loc_max;
+                double loc_min_x;
+                double loc_max_x;
 
-                if (p > q)
+                double loc_min_y;
+                double loc_max_y;
+
+                double loc_min_z;
+                double loc_max_z;
+
+                if (p.x() > q.x())
                 {
-                    if (p > r)
+                    if (p.x() > r.x())
                     {
-                        loc_max = p;
-                        if (q > r)
+                        loc_max_x = p.x();
+                        if (q.x() > r.x())
                         {
-                            loc_min = r;
+                            loc_min_x = r.x();
                         }
                         else
                         {
-                            loc_min = q;
+                            loc_min_x = q.x();
                         }
                     }
                     else
                     {
-                        loc_max = r;
-                        loc_min = q;
+                        loc_max_x = r.x();
+                        loc_min_x = q.x();
                     }
                 }
                 else
                 {
-                    if (q > r)
+                    if (q.x() > r.x())
                     {
-                        loc_max = q;
-                        if (r > p)
+                        loc_max_x = q.x();
+                        if (r.x() > p.x())
                         {
-                            loc_min = p;
+                            loc_min_x = p.x();
                         }
                         else
                         {
-                            loc_min = r;
+                            loc_min_x = r.x();
                         }
                     }
                     else
                     {
-                        loc_max = r;
-                        loc_min = p;
+                        loc_max_x = r.x();
+                        loc_min_x = p.x();
                     }
                 }
 
-                Bounding_box{loc_min, loc_max, true};
+                if (p.y() > q.y())
+                {
+                    if (p.y() > r.y())
+                    {
+                        loc_max_y = p.y();
+                        if (q.y() > r.y())
+                        {
+                            loc_min_y = r.y();
+                        }
+                        else
+                        {
+                            loc_min_y = q.y();
+                        }
+                    }
+                    else
+                    {
+                        loc_max_y = r.y();
+                        loc_min_y = q.y();
+                    }
+                }
+                else
+                {
+                    if (q.y() > r.y())
+                    {
+                        loc_max_y = q.y();
+                        if (r.y() > p.y())
+                        {
+                            loc_min_y = p.y();
+                        }
+                        else
+                        {
+                            loc_min_y = r.y();
+                        }
+                    }
+                    else
+                    {
+                        loc_max_y = r.y();
+                        loc_min_y = p.y();
+                    }
+                }
+
+                if (p.z() > q.z())
+                {
+                    if (p.z() > r.z())
+                    {
+                        loc_max_z = p.z();
+                        if (q.z() > r.z())
+                        {
+                            loc_min_z = r.z();
+                        }
+                        else
+                        {
+                            loc_min_z = q.z();
+                        }
+                    }
+                    else
+                    {
+                        loc_max_z = r.z();
+                        loc_min_z = q.z();
+                    }
+                }
+                else
+                {
+                    if (q.z() > r.z())
+                    {
+                        loc_max_z = q.z();
+                        if (r > p)
+                        {
+                            loc_min_z = p.z();
+                        }
+                        else
+                        {
+                            loc_min_z = r.z();
+                        }
+                    }
+                    else
+                    {
+                        loc_max_z = r.z();
+                        loc_min_z = p.z();
+                    }
+                }
+
+                Point_t loc_max{loc_max_x, loc_max_y, loc_max_z};
+                Point_t loc_min{loc_min_x, loc_min_y, loc_min_z};
+
+                Bounding_box tmp{loc_min, loc_max, true};
+                box_ = tmp;
 
             }
 
@@ -186,7 +278,7 @@ namespace lingeo {
         }
     }
 
-    bool arrange_3D_triangle_points(Triangle_t T1, Triangle_t T2)
+    bool arrange_3D_triangle_points(Triangle_t &T1, Triangle_t &T2)
     {
         int det_p = det(T2.p(), T2.q(), T2.r(), T1.p()); 
         int det_q = det(T2.p(), T2.q(), T2.r(), T1.q());
@@ -200,10 +292,9 @@ namespace lingeo {
         {
             if ( (cmp::sign(det_q) == cmp::sign(det_r)) && (cmp::sign(det_p) != cmp::sign(det_q)) ) // by construction, the last check can be removed
             {
-                if (cmp::sign(det_p) < 0)
+                if (cmp::sign(det_p) > 0)
                 {
                     T2.swap_q_r();
-                    break;
                 }
                 else if (cmp::sign(det_p) == 0 && cmp::sign(det_q) > 0)
                 {
@@ -224,13 +315,14 @@ namespace lingeo {
 
     bool check_3D_triangles_intersection(Triangle_t T1, Triangle_t T2)
     {
-        bool is_arranged = arrange_3D_triangle_points(T1, T2);
-        if (!is_arranged)
+        bool is_arranged_1 = arrange_3D_triangle_points(T1, T2);
+        bool is_arranged_2 = arrange_3D_triangle_points(T2, T1);
+        if (!is_arranged_1 || !is_arranged_2)
         {
             return false;
         }
 
-        if (cmp::less_equal(det(T1.p(), T1.q(), T2.p(), T2.q()), 0) && cmp::less_equal(det(T1.p(), T1.r(), T2.r(), T2.p()), 0))
+        if (cmp::less_equal(det(T1.p(), T1.q(), T2.q(), T2.p()), 0) && cmp::less_equal(det(T1.p(), T1.r(), T2.p(), T2.r()), 0))
         {
             return true;
         }
