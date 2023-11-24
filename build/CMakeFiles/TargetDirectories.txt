@@ -1,0 +1,14 @@
+/home/andrey/Desktop/DREC/ilab/Triangles/build/CMakeFiles/rebuild_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/CMakeFiles/edit_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/CMakeFiles/test.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/CMakeFiles/rebuild_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/CMakeFiles/edit_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/CMakeFiles/test.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/end_to_end/CMakeFiles/rebuild_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/end_to_end/CMakeFiles/edit_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/end_to_end/CMakeFiles/test.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/end_to_end/CMakeFiles/end_to_end_tests.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/unit/CMakeFiles/rebuild_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/unit/CMakeFiles/edit_cache.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/unit/CMakeFiles/test.dir
+/home/andrey/Desktop/DREC/ilab/Triangles/build/test/unit/CMakeFiles/unit_tests.dir

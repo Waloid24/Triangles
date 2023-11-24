@@ -25,9 +25,9 @@ int main ()
 
     for (int i = 1; i <= n_coordinates; ++i, ++end)
     {
-
         double coordinate;
         std::cin >> coordinate;
+
         coordinates.push_back(coordinate);
 
         if (i % 3 == 0)
