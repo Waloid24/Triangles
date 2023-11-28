@@ -42,8 +42,8 @@ int main ()
         triangles.emplace_back(points[i], points[i+1], points[i+2]);
     }
 
-    lingeo::Vector3 vec1{16, 16, 16};
-    lingeo::Vector3 vec2{-16, -16, -16};
+    lingeo::Vector3 vec1{16};
+    lingeo::Vector3 vec2{-16};
 
     lingeo::Bounding_box region{vec1, vec2};
 

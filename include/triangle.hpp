@@ -6,22 +6,18 @@
 #include "point.hpp"
 #include "bounding_objs.hpp"
 
-//TODO: add segment and degenerate cases - they are correct cases
-//TODO: one defenition row (на cppreference), 3-d Vladimirov lection. Функции, которые в хэдере должны быть inline! Например, подключение в разные cpp'ки один hpp, на этапе линковки свалится. Если же
-// inline, то можно несколько одинаковых с точки зрения лексического разбора функций написать. Там определение будет одно для нескольких единиц трансляции
-
 namespace lingeo {
 
-    typedef enum Positions {
+    enum Positions {
         DOESNT_INTERSECT,
         INTERSECT,
         COPLANAR
-    } Positions;
+    };
 
     class Triangle_t final {
 
         Point_t p_, q_, r_;
-        Bounding_box box_{NAN, NAN, NAN, NAN, NAN, NAN};
+        Bounding_box box_;
 
         public:
 
@@ -36,128 +32,23 @@ namespace lingeo {
                 double loc_min_z;
                 double loc_max_z;
 
-                if (p.x() > q.x())
-                {
-                    if (p.x() > r.x())
-                    {
-                        loc_max_x = p.x();
-                        if (q.x() > r.x())
-                        {
-                            loc_min_x = r.x();
-                        }
-                        else
-                        {
-                            loc_min_x = q.x();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_x = r.x();
-                        loc_min_x = q.x();
-                    }
-                }
-                else
-                {
-                    if (q.x() > r.x())
-                    {
-                        loc_max_x = q.x();
-                        if (r.x() > p.x())
-                        {
-                            loc_min_x = p.x();
-                        }
-                        else
-                        {
-                            loc_min_x = r.x();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_x = r.x();
-                        loc_min_x = p.x();
-                    }
-                }
+                loc_max_x = cmp::greater(p.x(), q.x()) ? (cmp::greater(p.x(),r.x()) ? p.x() : r.x()) :
+                                                         (cmp::greater(q.x(),r.x()) ? q.x() : r.x());
 
-                if (p.y() > q.y())
-                {
-                    if (p.y() > r.y())
-                    {
-                        loc_max_y = p.y();
-                        if (q.y() > r.y())
-                        {
-                            loc_min_y = r.y();
-                        }
-                        else
-                        {
-                            loc_min_y = q.y();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_y = r.y();
-                        loc_min_y = q.y();
-                    }
-                }
-                else
-                {
-                    if (q.y() > r.y())
-                    {
-                        loc_max_y = q.y();
-                        if (r.y() > p.y())
-                        {
-                            loc_min_y = p.y();
-                        }
-                        else
-                        {
-                            loc_min_y = r.y();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_y = r.y();
-                        loc_min_y = p.y();
-                    }
-                }
+                loc_max_y = cmp::greater(p.y(), q.y()) ? (cmp::greater(p.y(),r.y()) ? p.y() : r.y()) :
+                                                         (cmp::greater(q.y(),r.y()) ? q.y() : r.y());
+                
+                loc_max_z = cmp::greater(p.z(), q.z()) ? (cmp::greater(p.z(),r.z()) ? p.z() : r.z()) :
+                                                         (cmp::greater(q.z(),r.z()) ? q.z() : r.z());
 
-                if (p.z() > q.z())
-                {
-                    if (p.z() > r.z())
-                    {
-                        loc_max_z = p.z();
-                        if (q.z() > r.z())
-                        {
-                            loc_min_z = r.z();
-                        }
-                        else
-                        {
-                            loc_min_z = q.z();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_z = r.z();
-                        loc_min_z = q.z();
-                    }
-                }
-                else
-                {
-                    if (q.z() > r.z())
-                    {
-                        loc_max_z = q.z();
-                        if (r > p)
-                        {
-                            loc_min_z = p.z();
-                        }
-                        else
-                        {
-                            loc_min_z = r.z();
-                        }
-                    }
-                    else
-                    {
-                        loc_max_z = r.z();
-                        loc_min_z = p.z();
-                    }
-                }
+                loc_min_x = cmp::less(p.x(), q.x()) ?    (cmp::less(p.x(),r.x()) ? p.x() : r.x()) :
+                                                         (cmp::less(q.x(),r.x()) ? q.x() : r.x());
+
+                loc_min_y = cmp::less(p.y(), q.y()) ?    (cmp::less(p.y(),r.y()) ? p.y() : r.y()) :
+                                                         (cmp::less(q.y(),r.y()) ? q.y() : r.y());
+                
+                loc_min_z = cmp::less(p.z(), q.z()) ?    (cmp::less(p.z(),r.z()) ? p.z() : r.z()) :
+                                                         (cmp::less(q.z(),r.x()) ? q.z() : r.z());
 
                 Point_t loc_max{loc_max_x, loc_max_y, loc_max_z};
                 Point_t loc_min{loc_min_x, loc_min_y, loc_min_z};
@@ -250,10 +141,10 @@ namespace lingeo {
 
     };
 
-    Positions intersection_of_triangle_and_plane(Triangle_t T1, Triangle_t T2) //TODO: think about receive using const ref in everyone method except manager funtion
+    Positions intersection_of_triangle_and_plane(const Triangle_t &T1, const Triangle_t &T2) 
     {
         double p2_q2_r2_p1 = det(T2.p(), T2.q(), T2.r(), T1.p());
-        double p2_q2_r2_q1 = det(T2.p(), T2.q(), T2.r(), T1.q()); // receive using reference!
+        double p2_q2_r2_q1 = det(T2.p(), T2.q(), T2.r(), T1.q());
         double p2_q2_r2_r1 = det(T2.p(), T2.q(), T2.r(), T1.r());
 
         if (!std::isnan(p2_q2_r2_p1) && !std::isnan(p2_q2_r2_q1) != NAN && !std::isnan(p2_q2_r2_r1) != NAN)
@@ -278,7 +169,7 @@ namespace lingeo {
         }
     }
 
-    bool arrange_3D_triangle_points(Triangle_t &T1, Triangle_t &T2)
+    inline bool arrange_3D_triangle_points(Triangle_t &T1, Triangle_t &T2)
     {
         int det_p = det(T2.p(), T2.q(), T2.r(), T1.p()); 
         int det_q = det(T2.p(), T2.q(), T2.r(), T1.q());
@@ -313,7 +204,7 @@ namespace lingeo {
         return true;
     }
 
-    bool check_3D_triangles_intersection(Triangle_t T1, Triangle_t T2)
+    inline bool check_3D_triangles_intersection(Triangle_t &T1, Triangle_t &T2)
     {
         bool is_arranged_1 = arrange_3D_triangle_points(T1, T2);
         bool is_arranged_2 = arrange_3D_triangle_points(T2, T1);
@@ -330,7 +221,7 @@ namespace lingeo {
         return false; 
     }
 
-    bool p1_belongs_R1(Triangle_t T1, Triangle_t T2)
+    inline bool p1_belongs_R1(const Triangle_t &T1, const Triangle_t &T2)
     {
         if (cmp::greater_equal(det(T2.r(), T2.p(), T1.q()), 0))
         {
@@ -379,7 +270,7 @@ namespace lingeo {
         }
     }
 
-    bool p1_belongs_R2(Triangle_t T1, Triangle_t T2)
+    inline bool p1_belongs_R2(const Triangle_t &T1, const Triangle_t &T2)
     {
         if (cmp::greater_equal(det(T2.r(), T2.p(), T1.q()), 0))
         {
@@ -456,7 +347,7 @@ namespace lingeo {
         }
     }
 
-    bool check_2D_triangles_intersection(Triangle_t T1, Triangle_t T2)
+    inline bool check_2D_triangles_intersection(Triangle_t &T1, Triangle_t &T2)
     {
         T1.project_onto_plane();
         T2.project_onto_plane();
@@ -532,7 +423,7 @@ namespace lingeo {
     }
 
 
-    bool intersection_3D_triangles(Triangle_t T1, Triangle_t T2)
+    inline bool intersection_3D_triangles(Triangle_t T1, Triangle_t T2)
     {
         Positions result1 = intersection_of_triangle_and_plane(T1, T2);
         Positions result2 = intersection_of_triangle_and_plane(T2, T1);
@@ -550,6 +441,6 @@ namespace lingeo {
             return false;
         }
     }
-}
+} /* namespace lingeo */
 
 #endif

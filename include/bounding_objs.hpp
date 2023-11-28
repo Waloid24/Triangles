@@ -8,10 +8,12 @@ namespace lingeo {
 
     class Bounding_box {
 
-    lingeo::Vector3 max_{NAN, NAN, NAN}; // TODO: is it possible to avoid default initialization?
-    lingeo::Vector3 min_{NAN, NAN, NAN};
+    lingeo::Vector3 max_;
+    lingeo::Vector3 min_;
 
     public:
+
+        Bounding_box() = default;
 
         Bounding_box(lingeo::Vector3 vec1, lingeo::Vector3 vec2, bool are_ordered = false) {
 
@@ -57,7 +59,7 @@ namespace lingeo {
 
         void find_enclosing_cube()
         {
-            lingeo::Vector3 offset = lingeo::Vector3{0, 0, 0} - min_;
+            lingeo::Vector3 offset = lingeo::Vector3{0} - min_;
             min_ += offset;
             max_ += offset;
 

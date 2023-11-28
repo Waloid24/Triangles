@@ -6,12 +6,13 @@
 namespace lingeo
 {
 
-class Vector3 final { //maybe it's a class derived from a Point_t?
+class Vector3 final {
 
     double x_ = NAN, y_ = NAN, z_ = NAN;
 
     public:
 
+        Vector3(){}
         Vector3(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
         Vector3(Point_t point) : x_{point.x()}, y_{point.y()}, z_{point.z()} {}
         Vector3(double num) : x_{num}, y_{num}, z_{num} {}
@@ -21,6 +22,10 @@ class Vector3 final { //maybe it's a class derived from a Point_t?
             x_ = x;
             y_ = y;
             z_ = z;
+        }
+
+        bool is_null() const {
+            return (cmp::is_0(x_) && cmp::is_0(y_) && cmp::is_0(z_));
         }
 
         void print() const { std::cout << "(" << x_ << " ; " << y_ << " ; " << z_ << ")" << std::endl; }
@@ -43,6 +48,7 @@ class Vector3 final { //maybe it's a class derived from a Point_t?
 
         Vector3& operator/= (const Vector3 &rhs)
         {
+            //проверить координаты на неравенство нулю
             x_ /= rhs.x_; y_ /= rhs.y_; z_ /= rhs.z_;
             return *this;
         }
@@ -52,6 +58,9 @@ class Vector3 final { //maybe it's a class derived from a Point_t?
             x_ *= rhs.x_; y_ *= rhs.y_; z_ *= rhs.z_;
             return *this;
         }
+
+        //friend использовать тогда, когда нет методов, позволяющих достать приватные части класса,
+        //а если они есть, как у тебя, то стоит пользоваться ими и убрать friend
 
         friend bool operator== (const Vector3 &lhs, const Vector3 &rhs)
         {

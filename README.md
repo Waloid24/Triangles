@@ -1,6 +1,9 @@
 # Triangles
 Hello everyone! Here you can find the program that determines whether triangles intersect in space or not. 
 
+## How does it work?
+To determine whether the triangles intersect or not, I used the Olivier Devillers, Philippe Guigue algorithm.
+
 ## Build
 To copy this repository to yourself, enter:
 ```bash
