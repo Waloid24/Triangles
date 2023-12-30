@@ -6,11 +6,11 @@ def generate_coords_array(n_tests: int, output_dir):
     
     for test_i in range(n_tests):
 
-        num_triangles = 2 #np.random.randint(3, 10)
+        num_triangles = np.random.randint(10, 12)
         num_points = 3*num_triangles
         num_coords = 3*num_points
         coords = []
-        coords = np.random.uniform(-16, 16, num_coords)
+        coords = np.random.uniform(-128, 128, num_coords)
         
         with open(f"./{output_dir}/test_{test_i}.txt", "w") as test_file:
             test_file.write(str(num_triangles) + "\n")

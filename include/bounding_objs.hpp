@@ -2,6 +2,7 @@
 #define BOUNDING_OBJS_HPP
 
 #include "vector.hpp"
+#include "maths.hpp"
 
 
 namespace lingeo {
@@ -15,7 +16,7 @@ namespace lingeo {
 
         Bounding_box() = default;
 
-        Bounding_box(lingeo::Vector3 vec1, lingeo::Vector3 vec2, bool are_ordered = false) {
+        Bounding_box(const lingeo::Vector3 &vec1, const lingeo::Vector3 &vec2, bool are_ordered = false) {
 
             if (!are_ordered)
             {
@@ -40,20 +41,14 @@ namespace lingeo {
         Bounding_box(double x1, double y1, double z1, double x2, double y2, double z2)
         {
             if (cmp::greater(x1, x2) && cmp::greater(y1, y2) && cmp::greater(z1, z2))
-            {
-                lingeo::Vector3 tmp1{x1, y1, z1};
-                lingeo::Vector3 tmp2{x2, y2, z2};
-                
-                max_ = tmp1; //TODO: very ugly
-                min_ = tmp2; //TODO: very ugly
+            {                
+                max_.change_values(x1, y1, z1);
+                min_.change_values(x2, y2, z2);
             }
             else
             {
-                lingeo::Vector3 tmp1{x1, y1, z1};
-                lingeo::Vector3 tmp2{x2, y2, z2};
-
-                max_ = tmp2; //TODO: very ugly
-                min_ = tmp1; //TODO: very ugly
+                max_.change_values(x2, y2, z2);
+                min_.change_values(x1, y1, z1);
             }
         }
 
@@ -63,9 +58,9 @@ namespace lingeo {
             min_ += offset;
             max_ += offset;
 
-            int largest_size = cmp::round(get_largest_size());
+            long long largest_size = cmp::round(get_largest_size());
 
-            for (int bit = 0; bit < 32; bit++)
+            for (int bit = 0; bit < 64; bit++)
             {
                 if (largest_size == (1 << bit))
                 {
@@ -77,7 +72,7 @@ namespace lingeo {
                 }
             }
 
-            int x = find_highest_pow_two(largest_size);
+            long long x = maths::find_largest_pow_of_two(largest_size);
 
             max_.change_values(x, x, x);
             min_ -= offset;
@@ -105,18 +100,6 @@ namespace lingeo {
             double size_z = max_.z() - min_.z();
 
             return cmp::max(size_z, cmp::max(size_x, size_y)); 
-        }
-
-        int find_highest_pow_two(int num)
-        {
-            num--;
-            num |= num >> 1;
-            num |= num >> 2;
-            num |= num >> 4;
-            num |= num >> 8;
-            num |= num >> 16;
-            num++;
-            return num;
         }
 };
 

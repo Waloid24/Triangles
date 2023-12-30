@@ -6,10 +6,10 @@
 
 namespace cmp {
 
-    constexpr double min_number_ = 1e-6f;
+    static constexpr double min_number_ = 1e-6f;
 
     bool is_equal(double A, double B,
-        double max_diff = min_number_, double max_rel_diff = DBL_EPSILON)
+        double max_diff = min_number_, double max_rel_diff = min_number_)
     {
         double diff = std::fabs(A - B);
         if (diff < min_number_)
@@ -64,9 +64,9 @@ namespace cmp {
         }
     }
 
-    int round(double num)
+    long long round(double num)
     {
-        int tmp = static_cast<int>(num);
+        long long tmp = static_cast<long long>(num);
         if (is_equal(tmp, num))
             return tmp;
         else

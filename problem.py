@@ -1,18 +1,4 @@
 import Geometry3D as geometry
-import sys
-
-def get_coords(file_name):
-
-    numbers = []
-    with open(f"{file_name}", "r") as test_file:
-        for line in test_file:
-            for x in line.split():
-                numbers.append(float(x))
-
-    n_triangles = int(numbers[0])
-    numbers.pop(0)
-
-    return numbers, n_triangles
 
 def creating_points(numbers, n_triangles):
 
@@ -40,7 +26,7 @@ def intersecting_triangles(triangles):
     n_intersections = 0
 
     for i in range(len(triangles) - 1):
-        for j in range(i + 1, len(triangles)):   
+        for j in range(i + 1, len(triangles)):    
             if geometry.intersection(triangles[i], triangles[j]):
                 if i not in intersecting_indexes:
                     intersecting_indexes.append(i)
@@ -50,24 +36,21 @@ def intersecting_triangles(triangles):
     return intersecting_indexes, n_intersections
 
 def main():
-    
-    n_tests = int(sys.argv[1])
-    test_folder = sys.argv[2]
-    answers_folder = sys.argv[3]
 
-    for it in range(n_tests):
+    n_intersections = 0
+    n_triangles = 2
 
-        test_file = f"{test_folder}/test_{it}.txt"
-        answers_file = f"{answers_folder}/answer_{it}.txt"
-        n_intersections = 0
+    if 0:
+        numbers = [29.3505, 805.295, 397.635, -248.565, -404.623, -873.618, -386.796, -76.4378, -878.078,
+                    -120.028, -992.064, 12.6612, -729.661, -244.151, -979.961, 997.444, 982.96, -259.114]
+    else:
+        numbers = [2.93505, 80.5295, 39.7635, -24.8565, -40.4623, -87.3618, -38.6796, -7.64378, -87.8078,
+                    -12.0028, -99.2064, 1.26612, -72.9661, -24.4151, -97.9961, 99.7444, 98.296,-25.9114]
 
-        numbers, n_triangles = get_coords(test_file)
-        points = creating_points(numbers, n_triangles)
-        triangles = creating_triangles(points, n_triangles)
-        intersecting_indexes, n_intersections = intersecting_triangles(triangles)
-        intersecting_indexes.sort()
+    points = creating_points(numbers, n_triangles)
+    triangles = creating_triangles(points, n_triangles)
+    intersecting_indexes, n_intersections = intersecting_triangles(triangles)
 
-        with open(answers_file, "w") as ans_file:
-            ans_file.write(f"{n_intersections}\n")
+    print(f"n_intersections = {n_intersections}")
         
 main()
