@@ -55,13 +55,9 @@ namespace cmp {
     double& max(double &l, double &r) // есть std::max, который принимает компаратор
     {
         if (greater_equal(l, r))
-        {
             return l;
-        }
         else
-        {
             return r;
-        }
     }
 
     long long round(double num)

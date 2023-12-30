@@ -9,22 +9,22 @@
 
 namespace lingeo {
 
-    typedef enum position {
+    enum Triangle_Position {
         
         DOESNT_INTERSECT,
         INTERSECT,
         COPLANAR
 
-    } pos;
+    };
 
     class Triangle final {
 
-        Vector3 p_, q_, r_;
+        Vector_3D p_, q_, r_;
         Bounding_box box_;
 
         public:
 
-            Triangle(const Vector3 &p, const Vector3 &q, const Vector3 &r) : p_{p}, q_{q}, r_{r} {
+            Triangle(const Vector_3D &p, const Vector_3D &q, const Vector_3D &r) : p_{p}, q_{q}, r_{r} {
 
                 double loc_min_x;
                 double loc_max_x;
@@ -53,8 +53,8 @@ namespace lingeo {
                 loc_min_z = cmp::less(p.z(), q.z()) ?    (cmp::less(p.z(),r.z()) ? p.z() : r.z()) :
                                                          (cmp::less(q.z(),r.x()) ? q.z() : r.z());
 
-                Vector3 loc_max{loc_max_x, loc_max_y, loc_max_z};
-                Vector3 loc_min{loc_min_x, loc_min_y, loc_min_z};
+                Vector_3D loc_max{loc_max_x, loc_max_y, loc_max_z};
+                Vector_3D loc_min{loc_min_x, loc_min_y, loc_min_z};
 
                 Bounding_box tmp{loc_min, loc_max, true};
                 box_ = tmp;
@@ -108,9 +108,7 @@ namespace lingeo {
             void arrange_counterclockwise()
             {
                 if (cmp::less(det(p_, q_, r_),0))
-                {
                     swap_q_r();
-                }
             }
 
             void swap_clockwise()
@@ -127,19 +125,19 @@ namespace lingeo {
             
             void circular_permutation()
             {
-                Vector3 temp_r = r_;
-                Vector3 temp_q = q_;
+                Vector_3D temp_r = r_;
+                Vector_3D temp_q = q_;
                 q_ = p_;
                 r_ = temp_q;
                 p_ = temp_r;
             }
 
-            Vector3 get_min_vec_in_bounding_box() const
+            Vector_3D get_min_vec() const
             {
                 return box_.min();
             }
 
-            Vector3 get_max_vec_in_bounding_box() const
+            Vector_3D get_max_vec() const
             {
                 return box_.max();
             }
@@ -150,109 +148,109 @@ namespace lingeo {
             }
 
 
-            Vector3 p() const { return p_; }
-            Vector3 q() const { return q_; } 
-            Vector3 r() const { return r_; }
+            Vector_3D p() const { return p_; }
+            Vector_3D q() const { return q_; } 
+            Vector_3D r() const { return r_; }
     };
 
-    typedef enum location3D {
+    enum Triangle_Location_3D {
         
-        below = -1,
-        on    = 0,
-        above = 1
+        BELOW = -1,
+        ON    = 0,
+        ABOVE = 1
 
-    } loc_3D;
+    };
 
-    loc_3D get_point_location(const lingeo::Vector3 &a, const lingeo::Vector3 &b, 
-                                const lingeo::Vector3 &c, const lingeo::Vector3 &d)
+    Triangle_Location_3D get_point_location(const lingeo::Vector_3D &a, const lingeo::Vector_3D &b, 
+                                const lingeo::Vector_3D &c, const lingeo::Vector_3D &d)
     {
         double loc = determ(a, b, c, d);
 
         if (cmp::is_0(loc))
-            return loc_3D::on;
+            return Triangle_Location_3D::ON;
         else if (cmp::greater(loc, 0))
-            return loc_3D::above;
+            return Triangle_Location_3D::ABOVE;
         else
-            return loc_3D::below;
+            return Triangle_Location_3D::BELOW;
     }
 
-    std::tuple<loc_3D, loc_3D, loc_3D> get_rel_location(const Triangle &T1, const Triangle &T2)
+    std::tuple<Triangle_Location_3D, Triangle_Location_3D, Triangle_Location_3D> get_rel_location(const Triangle &T1, const Triangle &T2)
     {
-        loc_3D pos_P = get_point_location(T2.p(), T2.q(), T2.r(), T1.p());
-        loc_3D pos_Q = get_point_location(T2.p(), T2.q(), T2.r(), T1.q());
-        loc_3D pos_R = get_point_location(T2.p(), T2.q(), T2.r(), T1.r());
+        Triangle_Location_3D pos_P = get_point_location(T2.p(), T2.q(), T2.r(), T1.p());
+        Triangle_Location_3D pos_Q = get_point_location(T2.p(), T2.q(), T2.r(), T1.q());
+        Triangle_Location_3D pos_R = get_point_location(T2.p(), T2.q(), T2.r(), T1.r());
 
         return std::tuple{pos_P, pos_Q, pos_R};
     }
 
-    pos triangle_and_plane_intersection(const Triangle &T1, const Triangle &T2) 
+    Triangle_Position triangle_and_plane_intersection(const Triangle &T1, const Triangle &T2) 
     {
         auto [P1_loc, Q1_loc, R1_loc] = get_rel_location(T1, T2);
 
-        if ((P1_loc == loc_3D::above && Q1_loc == loc_3D::above && R1_loc == loc_3D::above) ||
-            (P1_loc == loc_3D::below && Q1_loc == loc_3D::below && R1_loc == loc_3D::below))
+        if ((P1_loc == Triangle_Location_3D::ABOVE && Q1_loc == Triangle_Location_3D::ABOVE && R1_loc == Triangle_Location_3D::ABOVE) ||
+            (P1_loc == Triangle_Location_3D::BELOW && Q1_loc == Triangle_Location_3D::BELOW && R1_loc == Triangle_Location_3D::BELOW))
         {
-            return pos::DOESNT_INTERSECT;
+            return Triangle_Position::DOESNT_INTERSECT;
         }
-        else if (P1_loc == loc_3D::on && Q1_loc == loc_3D::on && R1_loc == loc_3D::on)
+        else if (P1_loc == Triangle_Location_3D::ON && Q1_loc == Triangle_Location_3D::ON && R1_loc == Triangle_Location_3D::ON)
         {
-            return pos::COPLANAR;
+            return Triangle_Position::COPLANAR;
         }
         else 
         {
-            return pos::INTERSECT;
+            return Triangle_Position::INTERSECT;
         }
     }
 
-    inline void arrange_triangles_3D(Triangle &T1, loc_3D P1_loc, loc_3D Q1_loc, loc_3D R1_loc,
+    inline void arrange_triangles_3D(Triangle &T1, Triangle_Location_3D P1_loc, Triangle_Location_3D Q1_loc, Triangle_Location_3D R1_loc,
                                      Triangle &T2)
     {
         switch (P1_loc)
         {
-            case loc_3D::above:
+            case Triangle_Location_3D::ABOVE:
             
-                if (Q1_loc == loc_3D::above && R1_loc != loc_3D::above)
+                if (Q1_loc == Triangle_Location_3D::ABOVE && R1_loc != Triangle_Location_3D::ABOVE)
                 {
                     T1.swap_clockwise();
                     T2.swap_q_r();
                 }
-                else if (Q1_loc != loc_3D::above && R1_loc == loc_3D::above)
+                else if (Q1_loc != Triangle_Location_3D::ABOVE && R1_loc == Triangle_Location_3D::ABOVE)
                 {
                     T1.swap_counterclockwise();
                     T2.swap_q_r();
                 }
                 break;
 
-            case loc_3D::on:
+            case Triangle_Location_3D::ON:
 
-                if (Q1_loc == loc_3D::above)
+                if (Q1_loc == Triangle_Location_3D::ABOVE)
                 {
-                    if (R1_loc == loc_3D::above)
+                    if (R1_loc == Triangle_Location_3D::ABOVE)
                         T2.swap_q_r();
                     else
                         T1.swap_counterclockwise();
                 }
-                else if (R1_loc == loc_3D::above)
+                else if (R1_loc == Triangle_Location_3D::ABOVE)
                     T1.swap_clockwise();
-                else if (Q1_loc == loc_3D::on && R1_loc == loc_3D::below)
+                else if (Q1_loc == Triangle_Location_3D::ON && R1_loc == Triangle_Location_3D::BELOW)
                 {
                     T1.swap_clockwise();
                     T2.swap_q_r();
                 }
-                else if (Q1_loc == loc_3D::below && R1_loc == loc_3D::on)
+                else if (Q1_loc == Triangle_Location_3D::BELOW && R1_loc == Triangle_Location_3D::ON)
                 {
                     T1.swap_counterclockwise();
                     T2.swap_q_r();
                 }
                 break;
 
-            case loc_3D::below:
+            case Triangle_Location_3D::BELOW:
 
                 if (Q1_loc == R1_loc)
                     T2.swap_q_r();
-                else if (Q1_loc == loc_3D::below)
+                else if (Q1_loc == Triangle_Location_3D::BELOW)
                     T1.swap_clockwise();
-                else if (R1_loc == loc_3D::below)
+                else if (R1_loc == Triangle_Location_3D::BELOW)
                     T1.swap_counterclockwise();
                 else
                     T2.swap_q_r();
@@ -275,13 +273,13 @@ namespace lingeo {
 
         P2_loc = get_point_location(T1.p(), T1.q(), T1.r(), T2.p());
 
-        if (P1_loc == loc_3D::on && P2_loc == loc_3D::on)
+        if (P1_loc == Triangle_Location_3D::ON && P2_loc == Triangle_Location_3D::ON)
             return (T1.p() == T2.p());
         else
         {
             auto KJ_mut_pos = get_point_location(T1.p(), T1.q(), T2.p(), T2.q());
             auto LI_mut_pos = get_point_location(T1.p(), T1.r(), T2.p(), T2.r());
-            return (KJ_mut_pos != loc_3D::above && LI_mut_pos != loc_3D::below);
+            return (KJ_mut_pos != Triangle_Location_3D::ABOVE && LI_mut_pos != Triangle_Location_3D::BELOW);
         }
     }
 
@@ -292,9 +290,7 @@ namespace lingeo {
             if (cmp::greater_equal(det(T2.r(), T1.p(), T1.q()), 0))
             {
                 if (cmp::greater_equal(det(T1.p(), T2.p(), T1.q()), 0))
-                {
                     return true;
-                }
                 else
                 {
                     if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
@@ -318,13 +314,9 @@ namespace lingeo {
                 if (cmp::greater_equal(det(T1.q(), T1.r(), T2.r()), 0))
                 {
                     if (cmp::greater_equal(det(T1.p(), T2.p(), T1.r()), 0))
-                    {
                         return true;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
                 else
                     return false;
@@ -357,9 +349,7 @@ namespace lingeo {
                             return false;
                     }
                     else
-                    {
                         return false;
-                    }
                 }
             }
             else
@@ -396,9 +386,7 @@ namespace lingeo {
                     if (cmp::greater_equal(det(T1.q(), T1.r(), T2.q()), 0))
                     {
                         if (cmp::greater_equal(det(T2.q(), T2.r(), T1.r()), 0))
-                        {
                             return true;
-                        }
                         else
                             return false;
                     }
@@ -424,13 +412,10 @@ namespace lingeo {
         double det_r2_p2_p1 = det(T2.r(), T2.p(), T1.p());
 
         if (cmp::is_0(det_q2_r2_p1) && cmp::is_0(det_r2_p2_p1) && cmp::is_0(det_p2_q2_p1))
-        {
             return false;
-        }
-        else if (cmp::greater(det_q2_r2_p1, 0) && cmp::greater(det_r2_p2_p1, 0) && cmp::greater(det_p2_q2_p1, 0))
-        {
+        else if (cmp::greater(det_q2_r2_p1, 0) && cmp::greater(det_r2_p2_p1, 0) 
+                                               && cmp::greater(det_p2_q2_p1, 0))
             return true;
-        }
         else if (cmp::is_0(det_q2_r2_p1))
         {
             if (cmp::greater(det_r2_p2_p1, 0) && cmp::greater(det_p2_q2_p1, 0))
@@ -469,13 +454,10 @@ namespace lingeo {
         for (int i = 0; i < 3; ++i)
         {
             if (cmp::greater_equal(det_p2_q2_p1, 0) && cmp::less_equal(det_q2_r2_p1, 0) && cmp::less_equal(det_r2_p2_p1, 0))
-            {
                 return p1_belongs_R2(T1, T2);
-            }
             if (cmp::greater(det_p2_q2_p1, 0) && cmp::greater(det_q2_r2_p1, 0) && cmp::less(det_r2_p2_p1, 0))
-            {
                 return p1_belongs_R1(T1, T2);
-            }
+
             T2.circular_permutation();
 
             det_p2_q2_p1 = det(T2.p(), T2.q(), T1.p());
@@ -489,21 +471,15 @@ namespace lingeo {
 
     inline bool triangles_intersection(Triangle T1, Triangle T2)
     {
-        pos result1 = triangle_and_plane_intersection(T1, T2);
-        pos result2 = triangle_and_plane_intersection(T2, T1);
+        Triangle_Position result1 = triangle_and_plane_intersection(T1, T2);
+        Triangle_Position result2 = triangle_and_plane_intersection(T2, T1);
 
-        if (result1 == pos::INTERSECT && result2 == pos::INTERSECT)
-        {
+        if (result1 == Triangle_Position::INTERSECT && result2 == Triangle_Position::INTERSECT)
             return triangles_intersection_3D(T1, T2);
-        }
-        else if (result1 == pos::COPLANAR && result2 == pos::COPLANAR)
-        {
+        else if (result1 == Triangle_Position::COPLANAR && result2 == Triangle_Position::COPLANAR)
             return triangles_intersection_2D(T1, T2);
-        }
         else
-        {
             return false;
-        }
     }
 } /* namespace lingeo */
 

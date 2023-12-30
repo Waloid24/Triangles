@@ -10,15 +10,15 @@
 namespace lingeo
 {
 
-class Vector3 final {
+class Vector_3D final {
 
     double x_ = NAN, y_ = NAN, z_ = NAN;
 
     public:
 
-        Vector3(){}
-        Vector3(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
-        Vector3(double num) : x_{num}, y_{num}, z_{num} {}
+        Vector_3D(){}
+        Vector_3D(double x, double y, double z) : x_{x}, y_{y}, z_{z} {}
+        Vector_3D(double num) : x_{num}, y_{num}, z_{num} {}
 
         void change_values(double x, double y, double z)
         {
@@ -60,33 +60,33 @@ class Vector3 final {
         double y() const { return y_; }
         double z() const { return z_; }
 
-        Vector3& operator+= (const Vector3 &rhs)
+        Vector_3D& operator+= (const Vector_3D &rhs)
         {
             x_ += rhs.x_; y_ += rhs.y_; z_ += rhs.z_;
             return *this;
         }
 
-        Vector3& operator-= (const Vector3 &rhs)
+        Vector_3D& operator-= (const Vector_3D &rhs)
         {
             x_ -= rhs.x_; y_ -= rhs.y_; z_ -= rhs.z_;
             return *this;
         }
 
-        Vector3& operator/= (const Vector3 &rhs)
+        Vector_3D& operator/= (const Vector_3D &rhs)
         {
             if (!cmp::is_0(rhs.x_) && !cmp::is_0(rhs.y_) && !cmp::is_0(rhs.z_))
                 x_ /= rhs.x_; y_ /= rhs.y_; z_ /= rhs.z_;
             return *this;
         }
 
-        Vector3& operator*= (const Vector3 &rhs)
+        Vector_3D& operator*= (const Vector_3D &rhs)
         {
             x_ *= rhs.x_; y_ *= rhs.y_; z_ *= rhs.z_;
             return *this;
         }
 };
 
-bool operator== (const Vector3 &lhs, const Vector3 &rhs)
+bool operator== (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     if (cmp::is_equal(lhs.x(), rhs.x()) && cmp::is_equal(lhs.y(), rhs.y()) && cmp::is_equal(lhs.z(), rhs.z()))
         return true;
@@ -94,12 +94,12 @@ bool operator== (const Vector3 &lhs, const Vector3 &rhs)
         return false;
 };
 
-bool operator!= (const Vector3 &lhs, const Vector3 &rhs)
+bool operator!= (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     return !(lhs == rhs);
 }
 
-bool operator>  (const Vector3 &lhs, const Vector3 &rhs)
+bool operator>  (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     if (cmp::greater(lhs.x(), rhs.x()) && cmp::greater(lhs.y(), rhs.y()) && cmp::greater(lhs.z(), rhs.z()))
         return true;
@@ -107,56 +107,56 @@ bool operator>  (const Vector3 &lhs, const Vector3 &rhs)
         return false;
 }
 
-bool operator<  (const Vector3 &lhs, const Vector3 &rhs)
+bool operator<  (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     return rhs > lhs;
 }
 
-bool operator>=  (const Vector3 &lhs, const Vector3 &rhs)
+bool operator>=  (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     return !(lhs < rhs);
 }
 
-bool operator<=  (const Vector3 &lhs, const Vector3 &rhs)
+bool operator<=  (const Vector_3D &lhs, const Vector_3D &rhs)
 {
     return !(lhs > rhs);
 }
 
-Vector3 operator+ (const Vector3 &lhs, const Vector3 &rhs)
+Vector_3D operator+ (const Vector_3D &lhs, const Vector_3D &rhs)
 {
-    Vector3 tmp{lhs};
+    Vector_3D tmp{lhs};
     tmp += rhs;
     return tmp;
 }
 
-Vector3 operator- (const Vector3 &lhs, const Vector3 &rhs)
+Vector_3D operator- (const Vector_3D &lhs, const Vector_3D &rhs)
 {
-    Vector3 tmp{lhs};
+    Vector_3D tmp{lhs};
     tmp -= rhs;
     return tmp;
 }
 
-Vector3 operator/ (const Vector3 &lhs, const Vector3 &rhs)
+Vector_3D operator/ (const Vector_3D &lhs, const Vector_3D &rhs)
 {
-    Vector3 tmp{lhs};
+    Vector_3D tmp{lhs};
     tmp /= rhs;
     return tmp;
 }
 
-Vector3 operator/ (const Vector3 &lhs, const double &num)
+Vector_3D operator/ (const Vector_3D &lhs, const double &num)
 {
-    Vector3 tmp{num};
+    Vector_3D tmp{num};
     return lhs / tmp;
 }
 
-Vector3 operator* (const Vector3 &lhs, const Vector3 &rhs)
+Vector_3D operator* (const Vector_3D &lhs, const Vector_3D &rhs)
 {
-    Vector3 tmp{lhs};
+    Vector_3D tmp{lhs};
     tmp *= rhs;
     return tmp;
 }
 
-inline double determ(const Vector3 &a, const Vector3 &b, const Vector3 &c, const Vector3 &d)
+inline double determ(const Vector_3D &a, const Vector_3D &b, const Vector_3D &c, const Vector_3D &d)
 {
     if (a.valid() && b.valid() && c.valid())
     {
@@ -176,7 +176,7 @@ enum Axes {
     Z
 };
 
-inline double det(const Vector3 &a, const Vector3 &b, const Vector3 &c, Axes axis = Z)
+inline double det(const Vector_3D &a, const Vector_3D &b, const Vector_3D &c, Axes axis = Z)
 {
     if (a.valid() && b.valid() && c.valid())
     {

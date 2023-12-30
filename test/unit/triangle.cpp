@@ -3,9 +3,9 @@
 
 TEST(TriangleMain, swap)
 {
-    Vector3 p{0, 4, 0};
-    Vector3 q{0, 0, 4};
-    Vector3 r{0, -4, 0};
+    Vector_3D p{0, 4, 0};
+    Vector_3D q{0, 0, 4};
+    Vector_3D r{0, -4, 0};
 
     lingeo::Triangle tr{p, q, r};
 
@@ -15,9 +15,9 @@ TEST(TriangleMain, swap)
 
 TEST(TriangleMain, projectionZYintoXY)
 {
-    Vector3 p{0, 4, 0};
-    Vector3 q{0, 0, 4};
-    Vector3 r{0, -4, 0};
+    Vector_3D p{0, 4, 0};
+    Vector_3D q{0, 0, 4};
+    Vector_3D r{0, -4, 0};
 
     lingeo::Triangle tr{p, q, r};
 
@@ -27,9 +27,9 @@ TEST(TriangleMain, projectionZYintoXY)
 
 TEST(TriangleMain, projectionXZintoXY)
 {
-    Vector3 p{-6, 0, 0};
-    Vector3 q{0, 0, 4};
-    Vector3 r{4, 0, 0};
+    Vector_3D p{-6, 0, 0};
+    Vector_3D q{0, 0, 4};
+    Vector_3D r{4, 0, 0};
 
     lingeo::Triangle tr{p, q, r};
 
@@ -39,9 +39,9 @@ TEST(TriangleMain, projectionXZintoXY)
 
 TEST(TriangleMain, projectionXYintoXY)
 {
-    Vector3 p{-2, 0, 1};
-    Vector3 q{2, 2, 1};
-    Vector3 r{0, -2, 1};
+    Vector_3D p{-2, 0, 1};
+    Vector_3D q{2, 2, 1};
+    Vector_3D r{0, -2, 1};
 
     lingeo::Triangle tr{p, q, r};
 
@@ -51,9 +51,9 @@ TEST(TriangleMain, projectionXYintoXY)
 
 TEST(TriangleMain, arrange_ctclckws)
 {
-    Vector3 p{-2, 0, 1};
-    Vector3 q{2, 2, 1};
-    Vector3 r{0, -2, 1};
+    Vector_3D p{-2, 0, 1};
+    Vector_3D q{2, 2, 1};
+    Vector_3D r{0, -2, 1};
 
     lingeo::Triangle tr{p, q, r};
 
@@ -63,9 +63,9 @@ TEST(TriangleMain, arrange_ctclckws)
 
 TEST(TriangleMain, circular_permutation)
 {
-    Vector3 p{-2, 0, 1};
-    Vector3 q{2, 2, 1};
-    Vector3 r{0, -2, 1};
+    Vector_3D p{-2, 0, 1};
+    Vector_3D q{2, 2, 1};
+    Vector_3D r{0, -2, 1};
 
     lingeo::Triangle tr{p, q, r};
 

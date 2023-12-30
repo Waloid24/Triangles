@@ -9,14 +9,14 @@ namespace lingeo {
 
     class Bounding_box {
 
-    lingeo::Vector3 max_;
-    lingeo::Vector3 min_;
+    lingeo::Vector_3D max_;
+    lingeo::Vector_3D min_;
 
     public:
 
         Bounding_box() = default;
 
-        Bounding_box(const lingeo::Vector3 &vec1, const lingeo::Vector3 &vec2, bool are_ordered = false) {
+        Bounding_box(const lingeo::Vector_3D &vec1, const lingeo::Vector_3D &vec2, bool are_ordered = false) {
 
             if (!are_ordered)
             {
@@ -54,7 +54,7 @@ namespace lingeo {
 
         void find_enclosing_cube()
         {
-            lingeo::Vector3 offset = lingeo::Vector3{0} - min_;
+            lingeo::Vector_3D offset = lingeo::Vector_3D{0} - min_;
             min_ += offset;
             max_ += offset;
 
@@ -79,9 +79,9 @@ namespace lingeo {
             max_ -= offset;
         }
 
-        lingeo::Vector3 max() const { return max_; }
+        lingeo::Vector_3D max() const { return max_; }
 
-        lingeo::Vector3 min() const { return min_; }
+        lingeo::Vector_3D min() const { return min_; }
 
         bool contains(Bounding_box box) const
         {

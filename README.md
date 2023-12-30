@@ -2,7 +2,7 @@
 Hello everyone! Here you can find the program that determines whether triangles intersect in space or not. 
 
 ## How does it work?
-To determine whether the triangles intersect or not, I used the Olivier Devillers, Philippe Guigue algorithm.
+To determine whether the triangles intersect or not, I used the Olivier Devillers and Philippe Guigue algorithm.
 
 ## Build
 To copy this repository to yourself, enter:
@@ -68,3 +68,6 @@ To delete these three folders quickly, type:
 ```bash
 ./deleter.sh
 ```
+
+## Tests
+In end_to_end tests, a function from the Geometry3D library is used as a reference, which, as I discovered, **does not work correctly** in some cases. Most likely, this is due to incorrect rounding, so do not install in the file `Triangles/test/end_to_end/generating_tests.py` a large range of possible coordinates (*coords*). [A report](https://github.com/GouMinghao/Geometry3D/issues/21) was sent to the library developers.

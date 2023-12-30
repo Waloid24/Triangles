@@ -2,14 +2,14 @@
 #include "../../include/lingeo.hpp"
 
 struct PointMain : public testing::Test {
-    Vector3 *p;
-    Vector3 *q;
-    Vector3 *r;
+    Vector_3D *p;
+    Vector_3D *q;
+    Vector_3D *r;
 
     void SetUp() { 
-        p = new Vector3{0, 4, 0};
-        q = new Vector3{0, 0, 4};
-        r = new Vector3{0, -4, 0};
+        p = new Vector_3D{0, 4, 0};
+        q = new Vector_3D{0, 0, 4};
+        r = new Vector_3D{0, -4, 0};
     }
     void TearDown() {
         delete p;
