@@ -13,7 +13,7 @@ const int NUMBER_OF_DOTS = 3;
 
 int main ()
 {
-    int n_triangles;
+    size_t n_triangles;
     std::cin >> n_triangles;
 
     std::vector<double> coordinates;
@@ -25,11 +25,11 @@ int main ()
 
     coord_it begin = coordinates.begin();
     coord_it end   = coordinates.end();
-    int n_coordinates = n_triangles*9;
+    size_t n_coordinates = n_triangles*9;
 
     double largest_number = 0;
 
-    for (int i = 1; i <= n_coordinates; ++i, ++end)
+    for (size_t i = 1; i <= n_coordinates; ++i, ++end)
     {
         double coordinate;
         std::cin >> coordinate;
@@ -46,9 +46,10 @@ int main ()
         }
     }
 
-    for (int i = 0; i < n_triangles*3; i=i+3)
+    for (size_t i = 0, j = 0; i < n_triangles*3; i=i+3, ++j)
     {
         triangles.emplace_back(points[i], points[i+1], points[i+2]);
+        std::prev(triangles.end())->add_number(j);
     }
 
     long long largest_power_of_two = maths::find_largest_pow_of_two(cmp::round(std::abs(largest_number)));
@@ -60,6 +61,7 @@ int main ()
 
     octree::OctTree_t octree{region, triangles.begin(), triangles.end()};
     
-    std::cout << octree.count_intersection_in_octree() << std::endl;
-    
+    octree.count_intersection_in_octree();
+
+    lingeo::Triangle::show_intersect_triangles();    
 }

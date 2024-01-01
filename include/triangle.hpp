@@ -16,11 +16,24 @@ namespace lingeo {
         COPLANAR
 
     };
-
+    
     class Triangle final {
 
         Vector_3D p_, q_, r_;
         Bounding_box box_;
+        size_t number;
+        static std::vector<size_t> intersecting_triangles;
+
+        bool check_entry_into_set(size_t num_tr)
+        {
+            for (auto it = intersecting_triangles.begin(), ite = intersecting_triangles.end();
+                it != ite; ++it)
+            {
+                if (*it == num_tr)
+                    return true;
+            }
+            return false;
+        }
 
         public:
 
@@ -59,6 +72,30 @@ namespace lingeo {
                 Bounding_box tmp{loc_min, loc_max, true};
                 box_ = tmp;
 
+            }
+
+            static void show_intersect_triangles()
+            {
+                std::sort(intersecting_triangles.begin(),intersecting_triangles.end());
+
+                for (auto it = intersecting_triangles.begin(), ite = intersecting_triangles.end();
+                        it != ite; ++it)
+                {
+                    std::cout << *it << " ";
+                }
+            }
+
+            void add_number(size_t num)
+            {
+                number = num;
+            }
+
+            void add_to_intersect_triangles()
+            {
+                if (!check_entry_into_set(number))
+                {
+                    intersecting_triangles.push_back(number);
+                }
             }
 
             void print() const { 
@@ -152,6 +189,7 @@ namespace lingeo {
             Vector_3D q() const { return q_; } 
             Vector_3D r() const { return r_; }
     };
+    std::vector<size_t> Triangle::intersecting_triangles;
 
     enum Triangle_Location_3D {
         

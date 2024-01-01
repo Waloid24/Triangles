@@ -68,6 +68,6 @@ def main():
         intersecting_indexes.sort()
 
         with open(answers_file, "w") as ans_file:
-            ans_file.write(f"{n_intersections}\n")
+            ans_file.write(f"{intersecting_indexes}\n")
         
 main()

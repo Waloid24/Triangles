@@ -152,7 +152,11 @@ class OctTree_t {
                         if (tmp_it == l_obj_2)
                             continue;
                         if (lingeo::triangles_intersection(*tmp_it, *l_obj_2))
+                        {
                             num_intersections++;
+                            tmp_it->add_to_intersect_triangles();
+                            l_obj_2->add_to_intersect_triangles();
+                        }
                     }
                     tmp.pop_back();
                 }
@@ -170,7 +174,11 @@ class OctTree_t {
                 for (auto l_obj : objects_)
                 {
                     if(lingeo::triangles_intersection(l_obj, p_obj))
+                    {
                         num_intersections++;
+                        l_obj.add_to_intersect_triangles();
+                        p_obj.add_to_intersect_triangles();
+                    }
                 }
             }
 
