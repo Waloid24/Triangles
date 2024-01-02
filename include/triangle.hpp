@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <tuple>
+#include <algorithm>
 #include "double_comparison.hpp"
 #include "vector.hpp"
 #include "bounding_objs.hpp"
@@ -81,7 +82,7 @@ namespace lingeo {
                 for (auto it = intersecting_triangles.begin(), ite = intersecting_triangles.end();
                         it != ite; ++it)
                 {
-                    std::cout << *it << " ";
+                    std::cout << *it << "\n";
                 }
             }
 
