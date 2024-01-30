@@ -68,6 +68,7 @@ def main():
         intersecting_indexes.sort()
 
         with open(answers_file, "w") as ans_file:
-            ans_file.write(f"{intersecting_indexes}\n")
+            for number in intersecting_indexes:
+                ans_file.write(str(number) + '\n')
         
 main()

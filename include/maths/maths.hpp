@@ -1,10 +1,25 @@
-#ifndef DOUBLE_COMPARISON_HPP
-#define DOUBLE_COMPARISON_HPP
+#ifndef MATHS_HPP
+#define MATHS_HPP
 
 #include <cfloat>
 #include <cmath>
+#include <utility>
 
-namespace cmp {
+namespace maths
+{
+
+    long long find_largest_pow_of_two(size_t num)
+    {
+        num--;
+        num |= num >> 1;
+        num |= num >> 2;
+        num |= num >> 4;
+        num |= num >> 8;
+        num |= num >> 16;
+        num |= num >> 32;
+        num++;
+        return num;
+    }
 
     static constexpr double min_number_ = 1e-6f;
 
@@ -52,12 +67,28 @@ namespace cmp {
         return greater(val, 0) - less(val, 0); 
     }
 
-    double& max(double &l, double &r) // есть std::max, который принимает компаратор
+    double &max(double &l, double &r) // есть std::max, который принимает компаратор
     {
         if (greater_equal(l, r))
             return l;
         else
             return r;
+    }
+
+    double &min(double &l, double &r)
+    {
+        if (less_equal(l, r))
+            return l;
+        else
+            return r;
+    }
+
+    std::pair<double, double> max_min(double l, double r)
+    {
+        if (greater_equal(l,r))
+            return std::pair<double, double>(l,r);
+        else
+            return std::pair<double, double>(r,l);
     }
 
     long long round(double num)
@@ -68,6 +99,7 @@ namespace cmp {
         else
             return ++tmp;
     }
+
 }
 
 #endif

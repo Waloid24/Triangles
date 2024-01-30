@@ -1,4 +1,4 @@
-set(SOURCES triangle_triangle.cpp)
+set(SOURCES triangle.cpp)
 
 include(GoogleTest)
 

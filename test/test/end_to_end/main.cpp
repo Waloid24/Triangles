@@ -2,9 +2,9 @@
 #include <vector>
 #include <cmath>
 
-#include "../../include/triangle.hpp"
-#include "../../include/octree.hpp"
-#include "../../include/maths.hpp"
+#include "../../include/primitives/triangle.hpp"
+#include "../../include/dividing_space/octree.hpp"
+#include "../../include/maths/maths.hpp"
 
 #define NO_DEBUG
 
@@ -13,15 +13,17 @@ const int NUMBER_OF_DOTS = 3;
 
 int main ()
 {
+    // size_t n_triangles = 2;
     size_t n_triangles;
     std::cin >> n_triangles;
 
+    // std::vector<double> coordinates{0, 0, 0, 2, -2, 0, 2, 1, 0, 2.75, 3.00, 0, 1.94, -2.42, 0, 2.1, -2.67, 0};
     std::vector<double> coordinates;
-    std::vector<lingeo::Vector_3D> points;
+    std::vector<lingeo::Vector> points;
     std::vector<lingeo::Triangle> triangles;
 
     using coord_it  = typename std::vector<double>::iterator;
-    using points_it = typename std::vector<lingeo::Vector_3D>::iterator;
+    using points_it = typename std::vector<lingeo::Vector>::iterator;
 
     coord_it begin = coordinates.begin();
     coord_it end   = coordinates.end();
@@ -36,7 +38,7 @@ int main ()
 
         coordinates.push_back(coordinate);
 
-        if (cmp::greater(coordinate, largest_number))
+        if (maths::greater(coordinate, largest_number))
             largest_number = coordinate;
 
         if (i % 3 == 0)
@@ -52,10 +54,12 @@ int main ()
         std::prev(triangles.end())->add_number(j);
     }
 
-    long long largest_power_of_two = maths::find_largest_pow_of_two(cmp::round(std::abs(largest_number)));
+    long long largest_power_of_two = maths::find_largest_pow_of_two(maths::round(std::abs(largest_number)));
 
-    lingeo::Vector_3D vec1{largest_power_of_two};
-    lingeo::Vector_3D vec2{-largest_power_of_two};
+    lingeo::Vector vec1{largest_power_of_two};
+    lingeo::Vector vec2{-largest_power_of_two};
+    // lingeo::Vector vec1{4};
+    // lingeo::Vector vec2{-4};
 
     lingeo::Bounding_box region{vec1, vec2};
 
