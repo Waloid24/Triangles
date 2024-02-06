@@ -1,6 +1,9 @@
 #ifndef TRIANGLES_3D
 #define TRIANGLES_3D
 
+#include <tuple>
+#include "../primitives/triangle.hpp"
+
 namespace lingeo {
 
 enum class Triangle_Position

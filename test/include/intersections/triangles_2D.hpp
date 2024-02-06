@@ -1,6 +1,8 @@
 #ifndef TRIANGLES_2D
 #define TRIANGLES_2D
 
+#include "../primitives/triangle.hpp"
+
 namespace lingeo {
 
     inline bool p1_belongs_R1(const Triangle &T1, const Triangle &T2)

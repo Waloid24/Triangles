@@ -3,6 +3,7 @@ project(3D_Triangles_intersection)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wmissing-include-dirs -pedantic")
 
 find_package(GTest REQUIRED)
 enable_testing()
